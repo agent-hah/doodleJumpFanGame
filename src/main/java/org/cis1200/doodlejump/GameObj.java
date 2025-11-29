@@ -45,8 +45,6 @@ public abstract class GameObj {
         this.ay = ay;
         this.hp = hp;
         this.affectVy = affectVy;
-
-        clip();
     }
 
     // Getters
@@ -74,7 +72,7 @@ public abstract class GameObj {
 
     public void setPy(int py) {
         this.py = py;
-        clip();
+        // clip();
     }
 
     public void setVx(int vx) { this.vx = vx; }

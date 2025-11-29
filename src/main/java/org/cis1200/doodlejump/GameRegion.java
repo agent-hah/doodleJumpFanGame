@@ -1,9 +1,13 @@
 package org.cis1200.doodlejump;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
@@ -13,6 +17,8 @@ public class GameRegion extends JPanel {
     private LinkedList<LinkedList<Platform>> platforms = new LinkedList<>();
     private Player player;
     private boolean playing = false;
+
+    private int interval = 80;
 
     private final JLabel status;
 
@@ -27,8 +33,22 @@ public class GameRegion extends JPanel {
 
     public static final int INTERVAL = 35;
 
+    private static final String IMG_FILE = "files/doodleJumpBackground.jpg";
+
+    private static BufferedImage img;
+    private static BufferedImage imgIcon;
+    private boolean paused = false;
+
     public GameRegion(JLabel status, JLabel score) {
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+        if (img == null) {
+            try {
+                img = ImageIO.read(new File(IMG_FILE));
+            } catch (IOException e)  {
+                // TODO: Create some screen
+            }
+        }
 
         Timer timer = new Timer(INTERVAL, e -> tick());
         timer.start();
@@ -63,12 +83,15 @@ public class GameRegion extends JPanel {
     private LinkedList<Platform> getPlatformPair(int py) {
         RandomNumberGenerator random = new RandomNumberGenerator();
         Platform newPlatform1 = new
-                Platform(random.next(COURT_WIDTH), py, COURT_WIDTH, COURT_HEIGHT);
+                Platform(random.next(COURT_WIDTH - Platform.WIDTH),
+                py, COURT_WIDTH, COURT_HEIGHT, random.next(2));
         Platform newPlatform2 = new
-                Platform(random.next(COURT_WIDTH), py, COURT_WIDTH, COURT_HEIGHT);
+                Platform(random.next(COURT_WIDTH - Platform.WIDTH),
+                py, COURT_WIDTH, COURT_HEIGHT, random.next(2));
         while (newPlatform2.intersects(newPlatform1)) {
             newPlatform2 =
-                    new Platform(random.next(COURT_WIDTH), py, COURT_WIDTH, COURT_HEIGHT);
+                    new Platform(random.next(COURT_WIDTH - Platform.WIDTH),
+                            py, COURT_WIDTH, COURT_HEIGHT, random.next(2));
         }
         LinkedList<Platform> toAdd = new LinkedList<>();
         toAdd.add(newPlatform1);
@@ -81,7 +104,7 @@ public class GameRegion extends JPanel {
 
         int max_count = 10;
         for(int count = 0; count <= max_count; count++) {
-            int py = 80 * count + 20;
+            int py = interval * count + 20;
             res.add(getPlatformPair(py));
         }
 
@@ -90,25 +113,32 @@ public class GameRegion extends JPanel {
 
     public void reset() {
         player = new Player(COURT_WIDTH, COURT_HEIGHT);
+        this.interval = 80;
         platforms = createInitialPlatforms();
+        this.score = 0;
+        scoreLabel.setText("Score: " + score);
+        status.setText("Running Doodle Jump!");
 
         playing = true;
+        paused = false;
         requestFocusInWindow();
     }
 
     private void tick() {
-        if (playing) {
+        if (playing && !paused) {
             player.move();
             this.scrollDown();
 
-            int region = (player.getPy() + 20) / 80;
+            if (score > 1500) {
+                interval = 200;
+            }
+            else if (score > 1000) {
+                interval = 150;
+            }
+            else if (score > 500) {
+                interval = 100;
+            }
 
-//            for (int i = region - 1; i <= region + 1 && i < platforms.size(); i++) {
-//                if (i < 0) { continue; }
-//                for (Platform platform : platforms.get(i)) {
-//                    player.interact(platform);
-//                }
-//            }
             for (List<Platform> platforms : platforms) {
                 for(Platform platform : platforms) {
                     player.interact(platform);
@@ -133,24 +163,42 @@ public class GameRegion extends JPanel {
             while (fixing) { fixing = propagate(); }
 
             player.setPy(player.getPy() + scoreToAdd);
-            score += scoreToAdd;
+            score += scoreToAdd / 10;
             this.scoreLabel.setText("Score: " + score);
         }
     }
 
     private boolean propagate() {
         if (platforms.peekLast() != null && platforms.peekLast().peekLast() != null &&
-        platforms.peekLast().peekLast().getPy() > COURT_HEIGHT - 30) {
+        platforms.peekLast().peekLast().getPy() > COURT_HEIGHT - 20 -
+                platforms.peekLast().peekLast().getHeight()) {
             platforms.removeLast();
-            platforms.addFirst(getPlatformPair(20));
+            int py = platforms.peekFirst().peekLast().getPy();
+            platforms.addFirst(getPlatformPair(py - interval));
             return true;
         }
         return false;
     }
 
+    public boolean isPaused() {
+        return this.paused;
+    }
+
+    public void pause() {
+        this.paused = true;
+        this.status.setText("Paused");
+    }
+
+    public void unpause() {
+        requestFocusInWindow();
+        this.paused = false;
+        this.status.setText("Running Doodle Jump!");
+    }
+
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+        g.drawImage(img, 0, 0, COURT_WIDTH, COURT_HEIGHT, null);
         player.draw(g);
         for (List<Platform> platforms : platforms) {
             for (Platform platform : platforms) {

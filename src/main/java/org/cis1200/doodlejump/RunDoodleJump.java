@@ -4,6 +4,7 @@ import org.cis1200.doodlejump.GameRegion;
 
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.border.Border;
 
 public class RunDoodleJump implements Runnable{
 
@@ -25,14 +26,40 @@ public class RunDoodleJump implements Runnable{
         final GameRegion court = new GameRegion(status, scoreLabel);
         frame.add(court, BorderLayout.CENTER);
 
-        // Reset button
+
+        // Control Panel with buttons
+        final JButton resume = new JButton("Resume");
+        final JButton reset = new JButton("Reset");
+        final JButton pause = new JButton("Pause");
+
+        resume.addActionListener(e -> {
+            court.unpause();
+            resume.setVisible(false);
+            reset.setVisible(false);
+        });
+
+        reset.addActionListener(e -> {
+            court.reset();
+            resume.setVisible(false);
+            reset.setVisible(false);
+        });
+
+        pause.addActionListener(e -> {
+            court.pause();
+            resume.setVisible(true);
+            reset.setVisible(true);
+        });
+
         final JPanel control_panel = new JPanel();
         frame.add(control_panel, BorderLayout.NORTH);
 
-        final JButton reset = new JButton("Reset");
-        reset.addActionListener(e -> court.reset());
-        control_panel.add(reset);
+        control_panel.add(pause);
         control_panel.add(scoreLabel);
+        control_panel.add(resume);
+        control_panel.add(reset);
+
+        resume.setVisible(false);
+        reset.setVisible(false);
 
         // Put the frame on the screen
         frame.pack();
