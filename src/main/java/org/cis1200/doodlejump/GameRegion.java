@@ -85,6 +85,11 @@ public class GameRegion extends JPanel {
         Platform newPlatform1 = new
                 Platform(random.next(COURT_WIDTH - Platform.WIDTH),
                 py, COURT_WIDTH, COURT_HEIGHT, random.next(2));
+        if (random.next(2) == 1) {
+            newPlatform1 = new
+                    WeakPlatform(random.next(COURT_WIDTH - Platform.WIDTH),
+                    py, COURT_WIDTH, COURT_HEIGHT);
+        }
         Platform newPlatform2 = new
                 Platform(random.next(COURT_WIDTH - Platform.WIDTH),
                 py, COURT_WIDTH, COURT_HEIGHT, random.next(2));
@@ -102,7 +107,7 @@ public class GameRegion extends JPanel {
     private LinkedList<LinkedList<Platform>> createInitialPlatforms() {
         LinkedList<LinkedList<Platform>> res = new LinkedList<>();
 
-        int max_count = 10;
+        int max_count = 9;
         for(int count = 0; count <= max_count; count++) {
             int py = interval * count + 20;
             res.add(getPlatformPair(py));
@@ -142,6 +147,9 @@ public class GameRegion extends JPanel {
             for (List<Platform> platforms : platforms) {
                 for(Platform platform : platforms) {
                     player.interact(platform);
+                    if (platform.getClass() == WeakPlatform.class) {
+                        platform.interact(player);
+                    }
                 }
             }
         }
@@ -178,10 +186,6 @@ public class GameRegion extends JPanel {
             return true;
         }
         return false;
-    }
-
-    public boolean isPaused() {
-        return this.paused;
     }
 
     public void pause() {
