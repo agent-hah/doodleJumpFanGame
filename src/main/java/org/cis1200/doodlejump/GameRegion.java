@@ -10,20 +10,24 @@ import java.util.List;
 public class GameRegion extends JPanel {
 
     // The state of the game
-    private List<List<Platform>> platforms = new LinkedList<>();
+    private LinkedList<LinkedList<Platform>> platforms = new LinkedList<>();
     private Player player;
     private boolean playing = false;
 
     private final JLabel status;
 
+    private final JLabel scoreLabel;
+
+    private int score = 0;
+
     public static final int COURT_WIDTH = 800;
-    public static final int COURT_HEIGHT = 1000;
+    public static final int COURT_HEIGHT = 800;
     public static final int PLAYER_VEL = 20;
 
 
     public static final int INTERVAL = 35;
 
-    public GameRegion(JLabel status) {
+    public GameRegion(JLabel status, JLabel score) {
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
         Timer timer = new Timer(INTERVAL, e -> tick());
@@ -53,27 +57,32 @@ public class GameRegion extends JPanel {
         });
 
         this.status = status;
+        this.scoreLabel = score;
     }
 
-    private List<List<Platform>> createInitialPlatforms() {
+    private LinkedList<Platform> getPlatformPair(int py) {
         RandomNumberGenerator random = new RandomNumberGenerator();
-        List<List<Platform>> res = new LinkedList<>();
+        Platform newPlatform1 = new
+                Platform(random.next(COURT_WIDTH), py, COURT_WIDTH, COURT_HEIGHT);
+        Platform newPlatform2 = new
+                Platform(random.next(COURT_WIDTH), py, COURT_WIDTH, COURT_HEIGHT);
+        while (newPlatform2.intersects(newPlatform1)) {
+            newPlatform2 =
+                    new Platform(random.next(COURT_WIDTH), py, COURT_WIDTH, COURT_HEIGHT);
+        }
+        LinkedList<Platform> toAdd = new LinkedList<>();
+        toAdd.add(newPlatform1);
+        toAdd.add(newPlatform2);
+        return toAdd;
+    }
 
-        int max_count = 5;
+    private LinkedList<LinkedList<Platform>> createInitialPlatforms() {
+        LinkedList<LinkedList<Platform>> res = new LinkedList<>();
+
+        int max_count = 10;
         for(int count = 0; count <= max_count; count++) {
-            int py = 150 * count + 20;
-            Platform newPlatform1 = new
-                    Platform(random.next(COURT_WIDTH), py, COURT_WIDTH, COURT_HEIGHT);
-            Platform newPlatform2 = new
-                    Platform(random.next(COURT_WIDTH), py, COURT_WIDTH, COURT_HEIGHT);
-            while (newPlatform2.intersects(newPlatform1)) {
-                newPlatform2 =
-                        new Platform(random.next(COURT_WIDTH), py, COURT_WIDTH, COURT_HEIGHT);
-            }
-            List<Platform> toAdd = new LinkedList<>();
-            toAdd.add(newPlatform1);
-            toAdd.add(newPlatform2);
-            res.add(toAdd);
+            int py = 80 * count + 20;
+            res.add(getPlatformPair(py));
         }
 
         return res;
@@ -87,19 +96,56 @@ public class GameRegion extends JPanel {
         requestFocusInWindow();
     }
 
-    void tick() {
+    private void tick() {
         if (playing) {
             player.move();
+            this.scrollDown();
 
-            // TODO: optimize collision checking
+            int region = (player.getPy() + 20) / 80;
+
+//            for (int i = region - 1; i <= region + 1 && i < platforms.size(); i++) {
+//                if (i < 0) { continue; }
+//                for (Platform platform : platforms.get(i)) {
+//                    player.interact(platform);
+//                }
+//            }
             for (List<Platform> platforms : platforms) {
-                for (Platform platform : platforms) {
-                    player.interact(platform);;
+                for(Platform platform : platforms) {
+                    player.interact(platform);
                 }
             }
         }
 
         repaint();
+    }
+
+    private void scrollDown() {
+        if (player.getPy() < COURT_HEIGHT / 2) {
+            int scoreToAdd = (COURT_HEIGHT / 2) - player.getPy();
+
+            for (List<Platform> platforms : platforms) {
+                for (Platform platform : platforms) {
+                    platform.setPy(platform.getPy() + scoreToAdd);
+                }
+            }
+
+            boolean fixing = true;
+            while (fixing) { fixing = propagate(); }
+
+            player.setPy(player.getPy() + scoreToAdd);
+            score += scoreToAdd;
+            this.scoreLabel.setText("Score: " + score);
+        }
+    }
+
+    private boolean propagate() {
+        if (platforms.peekLast() != null && platforms.peekLast().peekLast() != null &&
+        platforms.peekLast().peekLast().getPy() > COURT_HEIGHT - 30) {
+            platforms.removeLast();
+            platforms.addFirst(getPlatformPair(20));
+            return true;
+        }
+        return false;
     }
 
     @Override
