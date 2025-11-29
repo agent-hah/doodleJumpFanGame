@@ -14,7 +14,7 @@ public class Platform extends GameObj {
     public static final int INIT_ACCEL_X = 0;
     public static final int INIT_ACCEL_Y = 0;
     public static final int HP = 1;
-    public static final int AFFECTVY = 30;
+    public static final int AFFECTVY = -10;
 
     public static BufferedImage img;
 

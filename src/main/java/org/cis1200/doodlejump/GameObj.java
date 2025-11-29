@@ -78,7 +78,7 @@ public abstract class GameObj {
 
     public void setVx(int vx) { this.vx = vx; }
 
-    public void setVy(int vy) { this.vx = vy; }
+    public void setVy(int vy) { this.vy = vy; }
 
     public void setAffectVy(int affectVy) { this.affectVy = affectVy; }
 
@@ -103,7 +103,7 @@ public abstract class GameObj {
         this.vy += this.ay;
     }
 
-    private void move() {
+    public void move() {
         this.px += this.vx;
         this.py += this.vy;
 

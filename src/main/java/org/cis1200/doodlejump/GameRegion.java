@@ -3,6 +3,7 @@ package org.cis1200.doodlejump;
 import javax.swing.*;
 import javax.swing.Timer;
 import java.awt.*;
+import java.awt.event.*;
 import java.util.*;
 import java.util.List;
 
@@ -10,13 +11,14 @@ public class GameRegion extends JPanel {
 
     // The state of the game
     private List<List<Platform>> platforms = new LinkedList<>();
+    private Player player;
     private boolean playing = false;
 
     private final JLabel status;
 
     public static final int COURT_WIDTH = 1000;
     public static final int COURT_HEIGHT = 1000;
-    public static final int PLAYER_INIT_VEL = 0;
+    public static final int PLAYER_VEL = 6;
 
 
     public static final int INTERVAL = 35;
@@ -26,19 +28,30 @@ public class GameRegion extends JPanel {
 
         Timer timer = new Timer(INTERVAL, e -> tick());
         timer.start();
-        platforms = createInitialPlatforms();
 
         setFocusable(true);
 
-//        addKeyListener(new KeyAdapter (){
-//            @Override
-//            public void keyPressed(KeyEvent e) {
-//                if (e.getKeyCode()) == KeyEvent.VK_D) {
-//
-//                }
-//            }
-//
-//        });
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_D:
+                        player.setVx(PLAYER_VEL);
+                        break;
+                    case KeyEvent.VK_A:
+                        player.setVx(-PLAYER_VEL);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                player.setVx(0);
+            }
+        });
+
         this.status = status;
     }
 
@@ -67,19 +80,31 @@ public class GameRegion extends JPanel {
     }
 
     public void reset() {
+        player = new Player(COURT_WIDTH, COURT_HEIGHT);
         platforms = createInitialPlatforms();
-        playing = true;
 
+        playing = true;
         requestFocusInWindow();
     }
 
     void tick() {
+        if (playing) {
+            player.move();
+
+            for (List<Platform> platforms : platforms) {
+                for (Platform platform : platforms) {
+                    player.interact(platform);;
+                }
+            }
+        }
+
         repaint();
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+        player.draw(g);
         for (List<Platform> platforms : platforms) {
             for (Platform platform : platforms) {
                 platform.draw(g);
