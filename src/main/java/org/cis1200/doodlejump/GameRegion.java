@@ -16,9 +16,9 @@ public class GameRegion extends JPanel {
 
     private final JLabel status;
 
-    public static final int COURT_WIDTH = 1000;
+    public static final int COURT_WIDTH = 800;
     public static final int COURT_HEIGHT = 1000;
-    public static final int PLAYER_VEL = 6;
+    public static final int PLAYER_VEL = 20;
 
 
     public static final int INTERVAL = 35;
@@ -61,7 +61,7 @@ public class GameRegion extends JPanel {
 
         int max_count = 5;
         for(int count = 0; count <= max_count; count++) {
-            int py = 200 * count;
+            int py = 150 * count + 20;
             Platform newPlatform1 = new
                     Platform(random.next(COURT_WIDTH), py, COURT_WIDTH, COURT_HEIGHT);
             Platform newPlatform2 = new
@@ -91,6 +91,7 @@ public class GameRegion extends JPanel {
         if (playing) {
             player.move();
 
+            // TODO: optimize collision checking
             for (List<Platform> platforms : platforms) {
                 for (Platform platform : platforms) {
                     player.interact(platform);;

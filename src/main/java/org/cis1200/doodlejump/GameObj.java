@@ -1,6 +1,7 @@
 package org.cis1200.doodlejump;
 
-import java.awt.Graphics;
+import javax.swing.*;
+import java.awt.*;
 
 public abstract class GameObj {
     /*

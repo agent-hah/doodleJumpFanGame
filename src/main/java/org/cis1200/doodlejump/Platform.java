@@ -7,14 +7,14 @@ import javax.imageio.ImageIO;
 
 public class Platform extends GameObj {
     public static final String IMG_FILE = "files/platform.png";
-    public static final int WIDTH = 200;
-    public static final int HEIGHT = 100;
+    public static final int WIDTH = 100;
+    public static final int HEIGHT = 20;
     public static final int INIT_VEL_X = 0;
     public static final int INIT_VEL_Y = 0;
     public static final int INIT_ACCEL_X = 0;
     public static final int INIT_ACCEL_Y = 0;
     public static final int HP = 1;
-    public static final int AFFECTVY = -10;
+    public static final int AFFECTVY = -25;
 
     public static BufferedImage img;
 
@@ -38,5 +38,7 @@ public class Platform extends GameObj {
     @Override
     public void draw(Graphics g) {
         g.drawImage(img, this.getPx(), this.getPy(), this.getWidth(), this.getHeight(), null);
+        g.setColor(Color.RED);
+        g.drawRect(this.getPx(), this.getPy(), this.getWidth(), this.getHeight());
     }
 }
