@@ -38,6 +38,16 @@ public class WeakPlatform extends Platform {
     }
 
     @Override
+    public boolean willIntersect(GameObj that) {
+        return super.willIntersect(that) && that.getVy() >= 0;
+    }
+
+    @Override
+    public boolean intersects(GameObj that) {
+        return super.intersects(that) && that.getVy() >= 0;
+    }
+
+    @Override
     public void draw(Graphics g) {
         g.drawImage(imgToDraw, this.getPx(), this.getPy(), this.getWidth(), this.getHeight(), null);
         g.setColor(Color.RED);

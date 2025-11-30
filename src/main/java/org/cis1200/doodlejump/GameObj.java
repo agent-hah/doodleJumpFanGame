@@ -66,6 +66,8 @@ public abstract class GameObj {
 
     public int getAffectVy() {return this.affectVy; }
 
+    public int getAy() {return this.ay; }
+
     // Setters
     public void setPx(int px) {
         this.px = px;
@@ -119,7 +121,7 @@ public abstract class GameObj {
         return (this.px + this.width >= that.px
                 && this.py + this.height >= that.py
                 && that.px + that.width >= this.px
-                && this.py + that.height >= this.py);
+                && that.py + that.height >= this.py);
     }
 
     /** checks if the object will return one timestep later

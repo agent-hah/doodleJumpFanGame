@@ -40,24 +40,38 @@ public class Player extends GameObj{
 
     @Override
     public boolean intersects(GameObj that) {
-        if (that.getClass() == Platform.class) {
-            return this.getVy() >= 0 && super.intersects(that);
+        if (that instanceof Platform) {
+            int pad = Math.max(this.getVy(), 5);
+            return (this.getVy() >= 0
+                    && that.getPy() + that.getHeight() >= this.getPy() + this.getHeight() - pad
+                    && this.getPx() + this.getWidth() >= that.getPx()
+                    && this.getPy() + this.getHeight() >= that.getPy()
+                    && that.getPx()+ that.getWidth() >= this.getPx());
         } else { return super.intersects(that); }
     }
 
     @Override
     public boolean willIntersect(GameObj that) {
-        int thisNextVy = this.getVy() + this.getVx();
-        if (that.getClass() == Platform.class) {
-            return thisNextVy >= 0 && super.willIntersect(that);
+        if (that instanceof Platform) {
+            int pad = Math.max(this.getVy(), 5);
+            int thisNextVy = this.getVy() + this.getAy();
+            int thisNextX = this.getPx() + this.getVx();
+            int thisNextY = this.getPy() + this.getVy();
+            int thatNextX = that.getPx() + that.getVx();
+            int thatNextY = that.getPy() + that.getVy();
+            return (thisNextVy >= 0
+                    && thatNextY + that.getHeight() >= thisNextY + this.getHeight() - pad
+                    && thisNextX + this.getWidth() >= thatNextX
+                    && thisNextY + this.getHeight() >= thatNextY
+                    && thatNextX + that.getWidth() >= thisNextX);
         } else { return super.willIntersect(that); }
     }
 
 
     @Override
     public void interact(GameObj that) {
-        if (this.willIntersect(that)) {
-            if (that.getClass() == Platform.class) {
+        if (this.willIntersect(that) | this.intersects(that)) {
+            if (that instanceof Platform && that.getClass() != WeakPlatform.class) {
                 this.setVy(that.getAffectVy());
             }
             // TODO: add interaction for monster class

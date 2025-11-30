@@ -18,7 +18,7 @@ public class GameRegion extends JPanel {
     private Player player;
     private boolean playing = false;
 
-    private int interval = 80;
+    private int yDist = 80;
 
     private final JLabel status;
 
@@ -90,6 +90,10 @@ public class GameRegion extends JPanel {
                     WeakPlatform(random.next(COURT_WIDTH - Platform.WIDTH),
                     py, COURT_WIDTH, COURT_HEIGHT);
         }
+        if (score > 1000) {
+            newPlatform1 = new DisappearingPlatform(random.next(COURT_WIDTH - Platform.WIDTH),
+                    py, COURT_WIDTH, COURT_HEIGHT);
+        }
         Platform newPlatform2 = new
                 Platform(random.next(COURT_WIDTH - Platform.WIDTH),
                 py, COURT_WIDTH, COURT_HEIGHT, random.next(2));
@@ -109,7 +113,7 @@ public class GameRegion extends JPanel {
 
         int max_count = 9;
         for(int count = 0; count <= max_count; count++) {
-            int py = interval * count + 20;
+            int py = yDist * count + 20;
             res.add(getPlatformPair(py));
         }
 
@@ -118,7 +122,7 @@ public class GameRegion extends JPanel {
 
     public void reset() {
         player = new Player(COURT_WIDTH, COURT_HEIGHT);
-        this.interval = 80;
+        this.yDist = 80;
         platforms = createInitialPlatforms();
         this.score = 0;
         scoreLabel.setText("Score: " + score);
@@ -135,23 +139,33 @@ public class GameRegion extends JPanel {
             this.scrollDown();
 
             if (score > 1500) {
-                interval = 200;
+                yDist = 200;
             }
             else if (score > 1000) {
-                interval = 150;
+                yDist = 150;
             }
             else if (score > 500) {
-                interval = 100;
+                yDist = 100;
             }
 
-            for (List<Platform> platforms : platforms) {
-                for(Platform platform : platforms) {
+            for (LinkedList<Platform> platforms : platforms) {
+                    platforms.removeIf(platform -> {
+                    if (platform.getClass() == DisappearingPlatform.class) {
+                        return ((DisappearingPlatform) platform).tick();
+                    }
+                    else { return false; }
+                    });
+            }
+
+            for (LinkedList<Platform> platforms : platforms) {
+                for (Platform platform : platforms) {
                     player.interact(platform);
                     if (platform.getClass() == WeakPlatform.class) {
                         platform.interact(player);
                     }
                 }
             }
+
         }
 
         repaint();
@@ -178,11 +192,10 @@ public class GameRegion extends JPanel {
 
     private boolean propagate() {
         if (platforms.peekLast() != null && platforms.peekLast().peekLast() != null &&
-        platforms.peekLast().peekLast().getPy() > COURT_HEIGHT - 20 -
-                platforms.peekLast().peekLast().getHeight()) {
+        platforms.peekLast().peekLast().getPy() > COURT_HEIGHT) {
             platforms.removeLast();
             int py = platforms.peekFirst().peekLast().getPy();
-            platforms.addFirst(getPlatformPair(py - interval));
+            platforms.addFirst(getPlatformPair(py - yDist));
             return true;
         }
         return false;
