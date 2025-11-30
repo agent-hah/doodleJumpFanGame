@@ -38,6 +38,7 @@ public class GameRegion extends JPanel {
     private static BufferedImage img;
     private static BufferedImage imgIcon;
     private boolean paused = false;
+    private static String SAVE_FILE = "files/doodleJump.txt";
 
     public GameRegion(JLabel status, JLabel score) {
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -80,28 +81,41 @@ public class GameRegion extends JPanel {
         this.scoreLabel = score;
     }
 
-    private LinkedList<Platform> getPlatformPair(int py) {
+    private Platform randomPlatform(int py, int choice) {
         RandomNumberGenerator random = new RandomNumberGenerator();
-        Platform newPlatform1 = new
-                Platform(random.next(COURT_WIDTH - Platform.WIDTH),
-                py, COURT_WIDTH, COURT_HEIGHT, random.next(2));
-        if (random.next(2) == 1) {
-            newPlatform1 = new
-                    WeakPlatform(random.next(COURT_WIDTH - Platform.WIDTH),
+
+        return switch (choice) {
+            case 1 -> Platform.getBouncyPlatform(random.next(COURT_WIDTH -
+                    Platform.WIDTH), py, COURT_WIDTH, COURT_HEIGHT);
+            case 2 -> new WeakPlatform(random.next(COURT_WIDTH - Platform.WIDTH),
                     py, COURT_WIDTH, COURT_HEIGHT);
+            default -> Platform.getRegPlatform(random.next(COURT_WIDTH - Platform.WIDTH),
+                    py, COURT_WIDTH, COURT_HEIGHT);
+        };
+    }
+
+    private LinkedList<Platform> getPlatformPair(int py) {
+        Platform newPlatform1;
+        RandomNumberGenerator random = new RandomNumberGenerator();
+
+        if (score < 1000) {
+            newPlatform1 = randomPlatform(py, random.next(3));
         }
-        if (score > 1000) {
+
+        else {
             newPlatform1 = new DisappearingPlatform(random.next(COURT_WIDTH - Platform.WIDTH),
                     py, COURT_WIDTH, COURT_HEIGHT);
         }
-        Platform newPlatform2 = new
-                Platform(random.next(COURT_WIDTH - Platform.WIDTH),
-                py, COURT_WIDTH, COURT_HEIGHT, random.next(2));
-        while (newPlatform2.intersects(newPlatform1)) {
-            newPlatform2 =
-                    new Platform(random.next(COURT_WIDTH - Platform.WIDTH),
-                            py, COURT_WIDTH, COURT_HEIGHT, random.next(2));
+
+        Platform newPlatform2 = randomPlatform(py, random.next(2));
+
+        int dist = Math.abs(newPlatform2.getPx() - newPlatform1.getPx() - Platform.WIDTH);
+
+        while (newPlatform2.intersects(newPlatform1) | dist <= 30) {
+            newPlatform2.setPx(random.next(COURT_WIDTH - Platform.WIDTH));
+            dist = Math.abs(newPlatform2.getPx() - newPlatform1.getPx() - Platform.WIDTH);
         }
+
         LinkedList<Platform> toAdd = new LinkedList<>();
         toAdd.add(newPlatform1);
         toAdd.add(newPlatform2);
@@ -210,6 +224,10 @@ public class GameRegion extends JPanel {
         requestFocusInWindow();
         this.paused = false;
         this.status.setText("Running Doodle Jump!");
+    }
+
+    public void load() {
+
     }
 
     @Override

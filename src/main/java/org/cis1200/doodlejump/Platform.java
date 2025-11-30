@@ -21,7 +21,7 @@ public class Platform extends GameObj {
     public static BufferedImage img;
     public static BufferedImage imgBouncy;
 
-    public Platform(int px, int py, int courtWidth, int courtHeight, int choose) {
+public Platform(int px, int py, int courtWidth, int courtHeight, int choose) {
             super(INIT_VEL_X, INIT_VEL_Y, px, py, WIDTH, HEIGHT, courtWidth, courtHeight,
                     INIT_ACCEL_X, INIT_ACCEL_Y, HP, AFFECTVY);
         try {
@@ -40,11 +40,6 @@ public class Platform extends GameObj {
     }
 
     @Override
-    public void setPx(int px) {
-
-    }
-
-    @Override
     public void interact(GameObj that) {
         return ;
     }
@@ -58,5 +53,13 @@ public class Platform extends GameObj {
         g.drawImage(imgToDraw, this.getPx(), this.getPy(), this.getWidth(), this.getHeight(), null);
         g.setColor(Color.RED);
         g.drawRect(this.getPx(), this.getPy(), this.getWidth(), this.getHeight());
+    }
+
+    public static Platform getRegPlatform(int px, int py, int courtWidth, int courtHeight) {
+        return new Platform(px, py, courtWidth, courtHeight, 0);
+    }
+
+    public static Platform getBouncyPlatform(int px, int py, int courtWidth, int courtHeight) {
+        return new Platform(px, py, courtWidth, courtHeight, 1);
     }
 }

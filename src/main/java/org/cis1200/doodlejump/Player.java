@@ -10,8 +10,8 @@ public class Player extends GameObj{
     public static final String IMG_FILE_L = "files/doodleJumpPlayerLeft.png";
     public static final String IMG_FILE_R = "files/doodleJumpPlayerRight.png";
     public static final int SIZE = 50;
-    public static final int INIT_POS_X = 250;
-    public static final int INIT_POS_Y = 950;
+    public static final int INIT_POS_X = 400;
+    public static final int INIT_POS_Y = 750;
     public static final int INIT_VEL_X = 0;
     public static final int INIT_VEL_Y = -25;
     public static final int INIT_ACCEL_Y = 2;
@@ -19,8 +19,8 @@ public class Player extends GameObj{
     public static final int INIT_HP = 1;
     public static final int AFFECTVY = 0;
 
-    private static BufferedImage img_r;
-    private static BufferedImage img_l;
+    public static BufferedImage img_r;
+    public static BufferedImage img_l;
 
     public Player(int courtWidth, int courtHeight) {
         super(INIT_VEL_X, INIT_VEL_Y, INIT_POS_X, INIT_POS_Y, SIZE, SIZE, courtWidth, courtHeight,

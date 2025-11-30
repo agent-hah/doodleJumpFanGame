@@ -68,6 +68,8 @@ public abstract class GameObj {
 
     public int getAy() {return this.ay; }
 
+    public int getMaxX() {return this.maxX; }
+
     // Setters
     public void setPx(int px) {
         this.px = px;
@@ -96,7 +98,6 @@ public abstract class GameObj {
     /** Makes sure the object is in bounds */
     private void clip() {
         this.px = Math.min(Math.max(this.px, 0), this.maxX);
-        this.py = Math.min(Math.max(this.py, 0), this.maxY);
     }
 
     /** accelerates the object */
