@@ -9,27 +9,28 @@ import java.io.IOException;
 
 public class DisappearingPlatform extends Platform {
 
-    public static String IMG_FILE_1 = "files/disappearingPlatformTick1.png";
-    public static String IMG_FILE_2 = "files/disappearingPlatformTick2.png";
-    public static String IMG_FILE_3 = "files/disappearingPlatformTick3.png";
+    public static final String IMG_FILE_1 = "files/disappearingPlatformTick1.png";
+    public static final String IMG_FILE_2 = "files/disappearingPlatformTick2.png";
+    public static final String IMG_FILE_3 = "files/disappearingPlatformTick3.png";
 
-    public static BufferedImage img1;
-    public static BufferedImage img2;
-    public static BufferedImage img3;
+    private static BufferedImage img1;
+    private static BufferedImage img2;
+    private static BufferedImage img3;
+
     private int state;
     private BufferedImage imgToDraw;
 
     public DisappearingPlatform(int px, int py, int courtWidth, int courtHeight) {
         super(px, py, courtWidth, courtHeight, 0);
 
-        RandomNumberGenerator  rng = new RandomNumberGenerator();
+        RandomNumberGenerator rng = new RandomNumberGenerator();
 
         try {
             img1 = ImageIO.read(new File(IMG_FILE_1));
             img2 = ImageIO.read(new File(IMG_FILE_2));
             img3 = ImageIO.read(new File(IMG_FILE_3));
         } catch (IOException e) {
-            //TODO: Do something here?
+            // TODO: Do something here?
         }
         imgToDraw = img1;
 
@@ -38,17 +39,16 @@ public class DisappearingPlatform extends Platform {
 
     public boolean tick() {
         state++;
-        if (state > 20 && state < 30) {
+        if (state > 60 && state < 90) {
             imgToDraw = img2;
-        }
-        else if (state > 40) {
+        } else if (state > 100) {
             imgToDraw = img3;
         }
         return shouldDelete();
     }
 
     public boolean shouldDelete() {
-        return state > 50;
+        return state > 115;
     }
 
     @Override

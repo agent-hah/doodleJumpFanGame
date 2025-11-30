@@ -6,7 +6,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-public class Player extends GameObj{
+public class Player extends GameObj {
     public static final String IMG_FILE_L = "files/doodleJumpPlayerLeft.png";
     public static final String IMG_FILE_R = "files/doodleJumpPlayerRight.png";
     public static final int SIZE = 50;
@@ -19,18 +19,20 @@ public class Player extends GameObj{
     public static final int INIT_HP = 1;
     public static final int AFFECTVY = 0;
 
-    public static BufferedImage img_r;
-    public static BufferedImage img_l;
+    private static BufferedImage imgR;
+    private static BufferedImage imgL;
 
     public Player(int courtWidth, int courtHeight) {
-        super(INIT_VEL_X, INIT_VEL_Y, INIT_POS_X, INIT_POS_Y, SIZE, SIZE, courtWidth, courtHeight,
-                INIT_ACCEL_X, INIT_ACCEL_Y, INIT_HP, AFFECTVY);
+        super(
+                INIT_VEL_X, INIT_VEL_Y, INIT_POS_X, INIT_POS_Y, SIZE, SIZE, courtWidth, courtHeight,
+                INIT_ACCEL_X, INIT_ACCEL_Y, INIT_HP, AFFECTVY
+        );
         try {
-            if (img_r == null) {
-                img_r = ImageIO.read(new File(IMG_FILE_R));
+            if (imgR == null) {
+                imgR = ImageIO.read(new File(IMG_FILE_R));
             }
-            if (img_l == null) {
-                img_l = ImageIO.read(new File(IMG_FILE_L));
+            if (imgL == null) {
+                imgL = ImageIO.read(new File(IMG_FILE_L));
             }
         } catch (IOException e) {
             System.err.println("Error loading image");
@@ -38,22 +40,30 @@ public class Player extends GameObj{
         }
     }
 
+    public Bullet shootBullet() {
+        int px = this.getPx() + Player.SIZE / 2;
+        int py = this.getPy();
+        return new Bullet(px, py, GameRegion.COURT_WIDTH, GameRegion.COURT_HEIGHT);
+    }
+
     @Override
     public boolean intersects(GameObj that) {
         if (that instanceof Platform) {
-            int pad = Math.max(this.getVy(), 5);
+            int pad = Math.min(Math.max(this.getVy(), 5), 30);
             return (this.getVy() >= 0
                     && that.getPy() + that.getHeight() >= this.getPy() + this.getHeight() - pad
                     && this.getPx() + this.getWidth() >= that.getPx()
                     && this.getPy() + this.getHeight() >= that.getPy()
-                    && that.getPx()+ that.getWidth() >= this.getPx());
-        } else { return super.intersects(that); }
+                    && that.getPx() + that.getWidth() >= this.getPx());
+        } else {
+            return super.intersects(that);
+        }
     }
 
     @Override
     public boolean willIntersect(GameObj that) {
         if (that instanceof Platform) {
-            int pad = Math.max(this.getVy(), 5);
+            int pad = Math.min(Math.max(this.getVy(), 5), 30);
             int thisNextVy = this.getVy() + this.getAy();
             int thisNextX = this.getPx() + this.getVx();
             int thisNextY = this.getPy() + this.getVy();
@@ -64,9 +74,10 @@ public class Player extends GameObj{
                     && thisNextX + this.getWidth() >= thatNextX
                     && thisNextY + this.getHeight() >= thatNextY
                     && thatNextX + that.getWidth() >= thisNextX);
-        } else { return super.willIntersect(that); }
+        } else {
+            return super.willIntersect(that);
+        }
     }
-
 
     @Override
     public void interact(GameObj that) {
@@ -81,12 +92,15 @@ public class Player extends GameObj{
     @Override
     public void draw(Graphics g) {
         if (this.getVx() >= 0) {
-            g.drawImage(img_r, this.getPx(), this.getPy(), this.getWidth(),
-                    this.getHeight(), null);
-        }
-        else {
-            g.drawImage(img_l, this.getPx(), this.getPy(), this.getWidth(),
-                    this.getHeight(), null);
+            g.drawImage(
+                    imgR, this.getPx(), this.getPy(), this.getWidth(),
+                    this.getHeight(), null
+            );
+        } else {
+            g.drawImage(
+                    imgL, this.getPx(), this.getPy(), this.getWidth(),
+                    this.getHeight(), null
+            );
         }
         g.drawRect(this.getPx(), this.getPy(), this.getWidth(), this.getHeight());
     }

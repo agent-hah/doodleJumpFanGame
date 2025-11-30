@@ -1,12 +1,9 @@
 package org.cis1200.doodlejump;
 
-import org.cis1200.doodlejump.GameRegion;
-
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.border.Border;
 
-public class RunDoodleJump implements Runnable{
+public class RunDoodleJump implements Runnable {
 
     @Override
     public void run() {
@@ -25,7 +22,6 @@ public class RunDoodleJump implements Runnable{
         // Main playing area
         final GameRegion court = new GameRegion(status, scoreLabel);
         frame.add(court, BorderLayout.CENTER);
-
 
         // Control Panel with buttons
         final JButton resume = new JButton("Resume");

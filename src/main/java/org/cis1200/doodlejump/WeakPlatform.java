@@ -7,10 +7,10 @@ import java.io.File;
 import java.io.IOException;
 
 public class WeakPlatform extends Platform {
-    public static String IMG_FILE = "files/weakPlatform.png";
-    public static String IMG_FILE_BROKEN = "files/weakPlatformBroken.png";
-    public static BufferedImage img;
-    public static BufferedImage imgBroken;
+    public static final String IMG_FILE = "files/weakPlatform.png";
+    public static final String IMG_FILE_BROKEN = "files/weakPlatformBroken.png";
+    private static BufferedImage img;
+    private static BufferedImage imgBroken;
     private BufferedImage imgToDraw;
 
     public WeakPlatform(int px, int py, int courtWidth, int courtHeight) {

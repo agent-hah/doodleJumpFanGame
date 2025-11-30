@@ -1,6 +1,6 @@
 package org.cis1200.doodlejump;
-import java.util.Random;
 
+import java.util.Random;
 
 // Random number generator to get x coordinates for each layer
 public class RandomNumberGenerator {

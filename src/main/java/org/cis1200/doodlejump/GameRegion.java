@@ -16,6 +16,9 @@ public class GameRegion extends JPanel {
     // The state of the game
     private LinkedList<LinkedList<Platform>> platforms = new LinkedList<>();
     private Player player;
+    private LinkedList<Monster> monsters = new LinkedList<>();
+    private LinkedList<Bullet> bullets = new LinkedList<>();
+
     private boolean playing = false;
 
     private int yDist = 80;
@@ -30,15 +33,15 @@ public class GameRegion extends JPanel {
     public static final int COURT_HEIGHT = 800;
     public static final int PLAYER_VEL = 20;
 
-
     public static final int INTERVAL = 35;
 
-    private static final String IMG_FILE = "files/doodleJumpBackground.jpg";
+    public static final String IMG_FILE = "files/doodleJumpBackground.jpg";
 
     private static BufferedImage img;
-    private static BufferedImage imgIcon;
+
     private boolean paused = false;
-    private static String SAVE_FILE = "files/doodleJump.txt";
+
+    public static final String SAVE_FILE = "files/doodleJump.txt";
 
     public GameRegion(JLabel status, JLabel score) {
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -46,7 +49,7 @@ public class GameRegion extends JPanel {
         if (img == null) {
             try {
                 img = ImageIO.read(new File(IMG_FILE));
-            } catch (IOException e)  {
+            } catch (IOException e) {
                 // TODO: Create some screen
             }
         }
@@ -59,15 +62,14 @@ public class GameRegion extends JPanel {
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                switch (e.getKeyCode()) {
-                    case KeyEvent.VK_D:
-                        player.setVx(PLAYER_VEL);
-                        break;
-                    case KeyEvent.VK_A:
-                        player.setVx(-PLAYER_VEL);
-                        break;
-                    default:
-                        break;
+                if (e.getKeyCode() == KeyEvent.VK_D) {
+                    player.setVx(PLAYER_VEL);
+                }
+                if (e.getKeyCode() == KeyEvent.VK_A) {
+                    player.setVx(-PLAYER_VEL);
+                }
+                if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+                    bullets.add(player.shootBullet());
                 }
             }
 
@@ -81,39 +83,50 @@ public class GameRegion extends JPanel {
         this.scoreLabel = score;
     }
 
-    private Platform randomPlatform(int py, int choice) {
+    private Platform createPlatform(int py, int choice) {
         RandomNumberGenerator random = new RandomNumberGenerator();
 
         return switch (choice) {
-            case 1 -> Platform.getBouncyPlatform(random.next(COURT_WIDTH -
-                    Platform.WIDTH), py, COURT_WIDTH, COURT_HEIGHT);
-            case 2 -> new WeakPlatform(random.next(COURT_WIDTH - Platform.WIDTH),
-                    py, COURT_WIDTH, COURT_HEIGHT);
-            default -> Platform.getRegPlatform(random.next(COURT_WIDTH - Platform.WIDTH),
-                    py, COURT_WIDTH, COURT_HEIGHT);
+            case 1 -> Platform.getBouncyPlatform(
+                    random.next(
+                            COURT_WIDTH -
+                                    Platform.WIDTH
+                    ), py, COURT_WIDTH, COURT_HEIGHT
+            );
+            case 2 -> new WeakPlatform(
+                    random.next(COURT_WIDTH - Platform.WIDTH),
+                    py, COURT_WIDTH, COURT_HEIGHT
+            );
+            default -> Platform.getRegPlatform(
+                    random.next(COURT_WIDTH - Platform.WIDTH),
+                    py, COURT_WIDTH, COURT_HEIGHT
+            );
         };
     }
 
     private LinkedList<Platform> getPlatformPair(int py) {
         Platform newPlatform1;
+        Platform newPlatform2;
         RandomNumberGenerator random = new RandomNumberGenerator();
 
         if (score < 1000) {
-            newPlatform1 = randomPlatform(py, random.next(3));
+            newPlatform1 = createPlatform(py, random.next(3));
+            newPlatform2 = createPlatform(py, random.next(2));
+        } else {
+            newPlatform1 = new DisappearingPlatform(
+                    random.next(COURT_WIDTH - Platform.WIDTH), py, COURT_WIDTH, COURT_HEIGHT
+            );
+            newPlatform2 = createPlatform(py, 1);
         }
-
-        else {
-            newPlatform1 = new DisappearingPlatform(random.next(COURT_WIDTH - Platform.WIDTH),
-                    py, COURT_WIDTH, COURT_HEIGHT);
-        }
-
-        Platform newPlatform2 = randomPlatform(py, random.next(2));
 
         int dist = Math.abs(newPlatform2.getPx() - newPlatform1.getPx() - Platform.WIDTH);
 
         while (newPlatform2.intersects(newPlatform1) | dist <= 30) {
             newPlatform2.setPx(random.next(COURT_WIDTH - Platform.WIDTH));
-            dist = Math.abs(newPlatform2.getPx() - newPlatform1.getPx() - Platform.WIDTH);
+            dist = Math.min(
+                    Math.abs(newPlatform2.getPx() - newPlatform1.getPx() - Platform.WIDTH),
+                    Math.abs(newPlatform1.getPx() - newPlatform2.getPx() - Platform.WIDTH)
+            );
         }
 
         LinkedList<Platform> toAdd = new LinkedList<>();
@@ -125,8 +138,8 @@ public class GameRegion extends JPanel {
     private LinkedList<LinkedList<Platform>> createInitialPlatforms() {
         LinkedList<LinkedList<Platform>> res = new LinkedList<>();
 
-        int max_count = 9;
-        for(int count = 0; count <= max_count; count++) {
+        int maxCount = 9;
+        for (int count = 0; count <= maxCount; count++) {
             int py = yDist * count + 20;
             res.add(getPlatformPair(py));
         }
@@ -134,8 +147,90 @@ public class GameRegion extends JPanel {
         return res;
     }
 
+    private void createMonster() {
+        if (monsters.size() >= 2) {
+            return;
+        }
+
+        Monster toAdd = null;
+
+        RandomNumberGenerator random = new RandomNumberGenerator();
+        int py = -40 - Monster.MONSTER_HEIGHT;
+        if (monsters.peekFirst() != null && monsters.peekFirst().getPy() <= -30) {
+            py = monsters.peekFirst().getPy() - 5 - Monster.MONSTER_HEIGHT;
+        }
+        if (score < 200) {
+            switch (random.next(20)) {
+                case 1:
+                    toAdd = Monster.getRegularMonster(
+                            random.next(COURT_WIDTH - Monster.MONSTER_WIDTH),
+                            py, COURT_WIDTH, COURT_HEIGHT
+                    );
+                    break;
+                case 2:
+                    toAdd = Monster.getMovingMonster(
+                            random.next(COURT_WIDTH - Monster.MONSTER_WIDTH),
+                            py, COURT_WIDTH, COURT_HEIGHT
+                    );
+                    break;
+                default:
+                    break;
+            }
+        } else if (score < 1000) {
+            switch (random.next(10)) {
+                case 1:
+                    toAdd = Monster.getRegularMonster(
+                            random.next(COURT_WIDTH - Monster.MONSTER_WIDTH),
+                            py, COURT_WIDTH, COURT_HEIGHT
+                    );
+                    break;
+                case 2:
+                    toAdd = Monster.getMovingMonster(
+                            random.next(COURT_WIDTH - Monster.MONSTER_WIDTH),
+                            py, COURT_WIDTH, COURT_HEIGHT
+                    );
+                    break;
+                case 3:
+                    // TODO: Create saucer monster
+                default:
+                    break;
+            }
+        } else {
+            switch (random.next(5)) {
+                case 1:
+                    toAdd = Monster.getRegularMonster(
+                            random.next(COURT_WIDTH - Monster.MONSTER_WIDTH),
+                            py, COURT_WIDTH, COURT_HEIGHT
+                    );
+                    break;
+                case 2:
+                    toAdd = Monster.getMovingMonster(
+                            random.next(COURT_WIDTH - Monster.MONSTER_WIDTH),
+                            py, COURT_WIDTH, COURT_HEIGHT
+                    );
+                    break;
+                case 3:
+                    // TODO: Create saucer monster
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        if (toAdd != null) {
+            for (Monster monster : monsters) {
+                while (toAdd.intersects(monster)) {
+                    toAdd.setPx(random.next(COURT_WIDTH - Monster.MONSTER_WIDTH));
+                }
+            }
+            monsters.add(toAdd);
+        }
+    }
+
     public void reset() {
         player = new Player(COURT_WIDTH, COURT_HEIGHT);
+        bullets = new LinkedList<>();
+        monsters = new LinkedList<>();
         this.yDist = 80;
         platforms = createInitialPlatforms();
         this.score = 0;
@@ -150,26 +245,47 @@ public class GameRegion extends JPanel {
     private void tick() {
         if (playing && !paused) {
             player.move();
+
+            createMonster();
+
+            for (Monster monster : monsters) {
+                monster.move();
+            }
+
+            for (Bullet bullet : bullets) {
+                bullet.move();
+            }
+
             this.scrollDown();
 
             if (score > 1500) {
                 yDist = 200;
-            }
-            else if (score > 1000) {
+            } else if (score > 1000) {
                 yDist = 150;
-            }
-            else if (score > 500) {
+            } else if (score > 500) {
                 yDist = 100;
             }
 
             for (LinkedList<Platform> platforms : platforms) {
-                    platforms.removeIf(platform -> {
+                platforms.removeIf(platform -> {
                     if (platform.getClass() == DisappearingPlatform.class) {
                         return ((DisappearingPlatform) platform).tick();
+                    } else {
+                        return false;
                     }
-                    else { return false; }
-                    });
+                });
             }
+
+            for (Monster monster : monsters) {
+                for (Bullet bullet : bullets) {
+                    monster.interact(bullet);
+                    bullet.interact(monster);
+                }
+            }
+
+            monsters.removeIf(monster -> monster.isDead());
+
+            bullets.removeIf(bullet -> bullet.isHitTarget());
 
             for (LinkedList<Platform> platforms : platforms) {
                 for (Platform platform : platforms) {
@@ -179,7 +295,6 @@ public class GameRegion extends JPanel {
                     }
                 }
             }
-
         }
 
         repaint();
@@ -195,8 +310,18 @@ public class GameRegion extends JPanel {
                 }
             }
 
+            for (Monster monster : monsters) {
+                monster.setPy(monster.getPy() + scoreToAdd);
+            }
+
+            for (Bullet bullet : bullets) {
+                bullet.setPy(bullet.getPy() + scoreToAdd);
+            }
+
             boolean fixing = true;
-            while (fixing) { fixing = propagate(); }
+            while (fixing) {
+                fixing = propagate();
+            }
 
             player.setPy(player.getPy() + scoreToAdd);
             score += scoreToAdd / 10;
@@ -205,14 +330,27 @@ public class GameRegion extends JPanel {
     }
 
     private boolean propagate() {
+        boolean keepGoing = false;
+
         if (platforms.peekLast() != null && platforms.peekLast().peekLast() != null &&
-        platforms.peekLast().peekLast().getPy() > COURT_HEIGHT) {
+                platforms.peekLast().peekLast().getPy() > COURT_HEIGHT) {
             platforms.removeLast();
             int py = platforms.peekFirst().peekLast().getPy();
             platforms.addFirst(getPlatformPair(py - yDist));
-            return true;
+            keepGoing = true;
         }
-        return false;
+
+        if (monsters.peekLast() != null && monsters.peekLast().getPy() > COURT_HEIGHT) {
+            monsters.removeLast();
+            keepGoing = true;
+        }
+
+        if (bullets.peekLast() != null && bullets.peekLast().isOutOfBounds()) {
+            bullets.removeLast();
+            keepGoing = true;
+        }
+
+        return keepGoing;
     }
 
     public void pause() {
@@ -240,8 +378,16 @@ public class GameRegion extends JPanel {
                 platform.draw(g);
             }
         }
+        for (Monster monster : monsters) {
+            monster.draw(g);
+        }
+        for (Bullet bullet : bullets) {
+            bullet.draw(g);
+        }
     }
 
     @Override
-    public Dimension getPreferredSize() { return new Dimension(COURT_WIDTH, COURT_HEIGHT); }
+    public Dimension getPreferredSize() {
+        return new Dimension(COURT_WIDTH, COURT_HEIGHT);
+    }
 }

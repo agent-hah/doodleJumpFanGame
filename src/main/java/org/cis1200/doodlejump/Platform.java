@@ -1,4 +1,5 @@
 package org.cis1200.doodlejump;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -16,14 +17,16 @@ public class Platform extends GameObj {
     public static final int INIT_ACCEL_Y = 0;
     public static final int HP = 1;
     public static final int AFFECTVY = -25;
-    public static final int BOUNCYAFFECTVY = - 40;
+    public static final int BOUNCYAFFECTVY = -40;
 
-    public static BufferedImage img;
-    public static BufferedImage imgBouncy;
+    private static BufferedImage img;
+    private static BufferedImage imgBouncy;
 
-public Platform(int px, int py, int courtWidth, int courtHeight, int choose) {
-            super(INIT_VEL_X, INIT_VEL_Y, px, py, WIDTH, HEIGHT, courtWidth, courtHeight,
-                    INIT_ACCEL_X, INIT_ACCEL_Y, HP, AFFECTVY);
+    public Platform(int px, int py, int courtWidth, int courtHeight, int choose) {
+        super(
+                INIT_VEL_X, INIT_VEL_Y, px, py, WIDTH, HEIGHT, courtWidth, courtHeight,
+                INIT_ACCEL_X, INIT_ACCEL_Y, HP, AFFECTVY
+        );
         try {
             if (img == null) {
                 img = ImageIO.read(new File(IMG_FILE));
@@ -39,9 +42,18 @@ public Platform(int px, int py, int courtWidth, int courtHeight, int choose) {
         }
     }
 
+    public void setPx(int px) {
+        super.setPx(px, true);
+    }
+
+    @Override
+    public void setPx(int px, boolean wantClipping) {
+        this.setPx(px);
+    }
+
     @Override
     public void interact(GameObj that) {
-        return ;
+        return;
     }
 
     @Override
