@@ -70,20 +70,24 @@ public class GameRegion extends JPanel {
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_D) {
-                    player.setVx(PLAYER_VEL);
-                }
-                if (e.getKeyCode() == KeyEvent.VK_A) {
-                    player.setVx(-PLAYER_VEL);
-                }
-                if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-                    bullets.add(player.shootBullet());
+                if (!paused && playing) {
+                    if (e.getKeyCode() == KeyEvent.VK_D) {
+                        player.setVx(PLAYER_VEL);
+                    }
+                    if (e.getKeyCode() == KeyEvent.VK_A) {
+                        player.setVx(-PLAYER_VEL);
+                    }
+                    if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+                        bullets.add(player.shootBullet());
+                    }
                 }
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
-                player.setVx(0);
+                if (!paused && playing) {
+                    player.setVx(0);
+                }
             }
         });
 
@@ -99,7 +103,7 @@ public class GameRegion extends JPanel {
         RandomNumberGenerator random = new RandomNumberGenerator();
 
         return switch (choice) {
-            case 1 -> Platform.getBouncyPlatform(
+            case 1 -> new BouncyPlatform(
                     random.next(
                             COURT_WIDTH -
                                     Platform.WIDTH
@@ -109,7 +113,7 @@ public class GameRegion extends JPanel {
                     random.next(COURT_WIDTH - Platform.WIDTH),
                     py, COURT_WIDTH, COURT_HEIGHT
             );
-            default -> Platform.getRegPlatform(
+            default -> new RegularPlatform(
                     random.next(COURT_WIDTH - Platform.WIDTH),
                     py, COURT_WIDTH, COURT_HEIGHT
             );
@@ -174,13 +178,13 @@ public class GameRegion extends JPanel {
         if (score < 200) {
             switch (random.next(20)) {
                 case 1:
-                    toAdd = Monster.getRegularMonster(
+                    toAdd = new RegularMonster(
                             random.next(COURT_WIDTH - Monster.MONSTER_WIDTH),
                             py, COURT_WIDTH, COURT_HEIGHT
                     );
                     break;
                 case 2:
-                    toAdd = Monster.getMovingMonster(
+                    toAdd = new MovingMonster(
                             random.next(COURT_WIDTH - Monster.MONSTER_WIDTH),
                             py, COURT_WIDTH, COURT_HEIGHT
                     );
@@ -191,13 +195,13 @@ public class GameRegion extends JPanel {
         } else if (score < 1000) {
             switch (random.next(10)) {
                 case 1:
-                    toAdd = Monster.getRegularMonster(
+                    toAdd = new RegularMonster(
                             random.next(COURT_WIDTH - Monster.MONSTER_WIDTH),
                             py, COURT_WIDTH, COURT_HEIGHT
                     );
                     break;
                 case 2:
-                    toAdd = Monster.getMovingMonster(
+                    toAdd = new MovingMonster(
                             random.next(COURT_WIDTH - Monster.MONSTER_WIDTH),
                             py, COURT_WIDTH, COURT_HEIGHT
                     );
@@ -210,13 +214,13 @@ public class GameRegion extends JPanel {
         } else {
             switch (random.next(5)) {
                 case 1:
-                    toAdd = Monster.getRegularMonster(
+                    toAdd = new RegularMonster(
                             random.next(COURT_WIDTH - Monster.MONSTER_WIDTH),
                             py, COURT_WIDTH, COURT_HEIGHT
                     );
                     break;
                 case 2:
-                    toAdd = Monster.getMovingMonster(
+                    toAdd = new MovingMonster(
                             random.next(COURT_WIDTH - Monster.MONSTER_WIDTH),
                             py, COURT_WIDTH, COURT_HEIGHT
                     );
@@ -240,6 +244,14 @@ public class GameRegion extends JPanel {
     }
 
     public void reset() {
+        playing = true;
+        paused = false;
+        this.pauseButton.setVisible(true);
+        this.resumeButton.setVisible(false);
+        this.resetButton.setVisible(false);
+        this.saveButton.setVisible(false);
+        requestFocusInWindow();
+
         player = new Player(COURT_WIDTH, COURT_HEIGHT);
         bullets = new LinkedList<>();
         monsters = new LinkedList<>();
@@ -307,9 +319,9 @@ public class GameRegion extends JPanel {
                 }
             }
 
-            monsters.removeIf(monster -> monster.isDead());
+            monsters.removeIf(Monster::isDead);
 
-            bullets.removeIf(bullet -> bullet.isHitTarget());
+             bullets.removeIf(bullet -> (bullet.isHitTarget() | bullet.isOutOfBounds()));
 
             for (LinkedList<Platform> platforms : platforms) {
                 for (Platform platform : platforms) {
@@ -325,10 +337,12 @@ public class GameRegion extends JPanel {
                 this.status.setText("Game Over!");
                 this.resetButton.setVisible(true);
                 this.pauseButton.setVisible(false);
+                player.setVy(25);
+                player.setAy(0);
+                player.setVx(0);
             }
         } else if (!playing) {
             scrollUp();
-            player.setVy(25);
             if (player.getPy() <= COURT_HEIGHT + 10) {
                 player.move();
             }
@@ -422,7 +436,7 @@ public class GameRegion extends JPanel {
             keepGoing = true;
         }
 
-        if (bullets.peekLast() != null && bullets.peekLast().isOutOfBounds()) {
+        if (bullets.peekLast() != null && bullets.peekLast().getPy() > COURT_HEIGHT) {
             bullets.removeLast();
             keepGoing = true;
         }
@@ -437,6 +451,7 @@ public class GameRegion extends JPanel {
         this.resetButton.setVisible(true);
         this.saveButton.setVisible(true);
         this.status.setText("Paused");
+
     }
 
     public void unpause() {
@@ -447,12 +462,17 @@ public class GameRegion extends JPanel {
         this.resumeButton.setVisible(false);
         this.resetButton.setVisible(false);
         this.saveButton.setVisible(false);
+        this.saveButton.setEnabled(true);
     }
 
     public void save() {
         BufferedWriter bw;
         try {
             bw = new BufferedWriter(new FileWriter(SAVE_FILE, false));
+
+            bw.write(Integer.toString(this.score));
+            bw.flush();
+            bw.newLine();
 
             bw.write(this.player.toString());
             bw.flush();
@@ -494,6 +514,9 @@ public class GameRegion extends JPanel {
                 bw.flush();
                 bw.newLine();
             }
+
+            bw.close();
+
             this.status.setText("Saved Doodle Jump! Ok to Exit Game!");
             this.saveButton.setEnabled(false);
         } catch (IOException e) {

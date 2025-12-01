@@ -64,9 +64,9 @@ public class Bullet extends GameObj {
         this.setPx(this.getPx() + this.getVx());
         this.setPy(this.getPy() + this.getVy());
 
-        if (this.getPx() <= 0 | this.getPx() >= this.getMaxX()) {
+        if (this.getPy() <= -20 | this.getPy() >= this.getMaxY() + 5) {
             this.outOfBounds = true;
-        } else if (this.getPx() <= 0 | this.getPx() >= this.getMaxY()) {
+        } else if (this.getPx() <= -20 | this.getPx() >= this.getMaxY() + 5) {
             this.outOfBounds = true;
         }
     }

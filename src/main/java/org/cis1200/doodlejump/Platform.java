@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
-public class Platform extends GameObj {
+public abstract class Platform extends GameObj {
     public static final String IMG_FILE = "files/platform.png";
     public static final String IMG_FILE_BOUNCY = "files/bouncyPlatform.png";
     public static final int WIDTH = 100;
@@ -22,9 +22,11 @@ public class Platform extends GameObj {
     private static BufferedImage img;
     private static BufferedImage imgBouncy;
 
+    private final BufferedImage imgToDraw;
+
     private int type;
 
-    public Platform(int px, int py, int courtWidth, int courtHeight, int choose) {
+    public Platform(int px, int py, int courtWidth, int courtHeight, int type) {
         super(
                 INIT_VEL_X, INIT_VEL_Y, px, py, WIDTH, HEIGHT, courtWidth, courtHeight,
                 INIT_ACCEL_X, INIT_ACCEL_Y, HP, AFFECTVY
@@ -40,21 +42,12 @@ public class Platform extends GameObj {
             // TODO: create a page that will be pushed toward the game
         }
 
-        this.type = 0;
-
-        if (choose == 1) {
+        if (type == 1) {
+            imgToDraw = imgBouncy;
             this.setAffectVy(BOUNCYAFFECTVY);
-            this.type = 1;
+        } else {
+            imgToDraw = img;
         }
-    }
-
-    public void setTypeRepresentation(int type) {
-        if (type > 3) {
-            type = 3;
-        } else if (type < 0) {
-            type = 0;
-        }
-        this.type = type;
     }
 
     public void setPx(int px) {
@@ -73,10 +66,6 @@ public class Platform extends GameObj {
 
     @Override
     public void draw(Graphics g) {
-        BufferedImage imgToDraw = img;
-        if (this.getAffectVy() == BOUNCYAFFECTVY) {
-            imgToDraw = imgBouncy;
-        }
         g.drawImage(imgToDraw, this.getPx(), this.getPy(), this.getWidth(), this.getHeight(), null);
         g.setColor(Color.RED);
         g.drawRect(this.getPx(), this.getPy(), this.getWidth(), this.getHeight());
@@ -85,19 +74,153 @@ public class Platform extends GameObj {
     @Override
     public String toString() {
         StringBuilder representation = new StringBuilder();
-        representation.append(this.type);
-        representation.append(", ");
         representation.append(this.getPx());
         representation.append(", ");
         representation.append(this.getPy());
         return representation.toString();
     }
+}
 
-    public static Platform getRegPlatform(int px, int py, int courtWidth, int courtHeight) {
-        return new Platform(px, py, courtWidth, courtHeight, 0);
+class RegularPlatform extends Platform {
+    public RegularPlatform(int px, int py, int courtWidth, int courtHeight) {
+        super(px, py, courtWidth, courtHeight, 0);
     }
 
-    public static Platform getBouncyPlatform(int px, int py, int courtWidth, int courtHeight) {
-        return new Platform(px, py, courtWidth, courtHeight, 1);
+    @Override
+    public String toString() {
+        StringBuilder representation = new StringBuilder();
+        representation.append("0, ");
+        representation.append(super.toString());
+        return representation.toString();
+    }
+}
+
+class BouncyPlatform extends Platform {
+    public BouncyPlatform(int px, int py, int courtWidth, int courtHeight) {
+        super(px, py, courtWidth, courtHeight, 1);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder representation = new StringBuilder();
+        representation.append("1, ");
+        representation.append(super.toString());
+        return representation.toString();
+    }
+}
+
+
+class WeakPlatform extends Platform {
+    public static final String IMG_FILE = "files/weakPlatform.png";
+    public static final String IMG_FILE_BROKEN = "files/weakPlatformBroken.png";
+    private static BufferedImage img;
+    private static BufferedImage imgBroken;
+    private BufferedImage imgToDraw;
+
+    public WeakPlatform(int px, int py, int courtWidth, int courtHeight) {
+        super(px, py, courtWidth, courtHeight, 0);
+        try {
+            if (img == null) {
+                img = ImageIO.read(new File(IMG_FILE));
+            }
+            if (imgBroken == null) {
+                imgBroken = ImageIO.read(new File(IMG_FILE_BROKEN));
+            }
+        } catch (IOException e) {
+            // TODO: Create some page
+        }
+        imgToDraw = img;
+    }
+
+    @Override
+    public void interact(GameObj that) {
+        if (this.willIntersect(that)) {
+            if (that.getClass() == Player.class) {
+                imgToDraw = imgBroken;
+            }
+        }
+    }
+
+    @Override
+    public boolean willIntersect(GameObj that) {
+        return super.willIntersect(that) && that.getVy() >= 0;
+    }
+
+    @Override
+    public boolean intersects(GameObj that) {
+        return super.intersects(that) && that.getVy() >= 0;
+    }
+
+    @Override
+    public void draw(Graphics g) {
+        g.drawImage(imgToDraw, this.getPx(), this.getPy(), this.getWidth(), this.getHeight(), null);
+        g.setColor(Color.RED);
+        g.drawRect(this.getPx(), this.getPy(), this.getWidth(), this.getHeight());
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder representation = new StringBuilder();
+        representation.append("2, ");
+        representation.append(super.toString());
+        return representation.toString();
+    }
+}
+
+class DisappearingPlatform extends Platform {
+
+    public static final String IMG_FILE_1 = "files/disappearingPlatformTick1.png";
+    public static final String IMG_FILE_2 = "files/disappearingPlatformTick2.png";
+    public static final String IMG_FILE_3 = "files/disappearingPlatformTick3.png";
+
+    private static BufferedImage img1;
+    private static BufferedImage img2;
+    private static BufferedImage img3;
+
+    private int state;
+    private BufferedImage imgToDraw;
+
+    public DisappearingPlatform(int px, int py, int courtWidth, int courtHeight) {
+        super(px, py, courtWidth, courtHeight, 0);
+
+        RandomNumberGenerator rng = new RandomNumberGenerator();
+
+        try {
+            img1 = ImageIO.read(new File(IMG_FILE_1));
+            img2 = ImageIO.read(new File(IMG_FILE_2));
+            img3 = ImageIO.read(new File(IMG_FILE_3));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        imgToDraw = img1;
+
+        state = -Math.min(((courtHeight - this.getPy()) / 2), rng.next(100));
+    }
+
+    public boolean tick() {
+        state++;
+        if (state > 60 && state < 90) {
+            imgToDraw = img2;
+        } else if (state > 100) {
+            imgToDraw = img3;
+        }
+        return shouldDelete();
+    }
+
+    public boolean shouldDelete() {
+        return state > 115;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder representation = new StringBuilder();
+        representation.append("3, ");
+        representation.append(super.toString());
+        return representation.toString();
+    }
+
+    @Override
+    public void draw(Graphics g) {
+        g.drawImage(imgToDraw, this.getPx(), this.getPy(), this.getWidth(), this.getHeight(), null);
     }
 }

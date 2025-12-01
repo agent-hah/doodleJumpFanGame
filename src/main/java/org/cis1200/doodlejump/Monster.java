@@ -6,9 +6,10 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-public class Monster extends GameObj {
+public abstract class Monster extends GameObj {
     public static final String IMG_FILE1 = "files/monster1.png";
     public static final String IMG_FILE2 = "files/monster2.png";
+    public static final String IMG_FILE3 = "files/monster3.png";
 
     public static final int INIT_VEL_X = 0;
     public static final int INIT_VEL_Y = 0;
@@ -22,15 +23,14 @@ public class Monster extends GameObj {
 
     private final BufferedImage imgToDraw;
 
-    private int type;
-
     private boolean isDead = false;
 
     private static BufferedImage img1;
     private static BufferedImage img2;
+    private static BufferedImage img3;
 
     public Monster(
-            int px, int py, int courtWidth, int courtHeight, int height, int width, int choice
+            int px, int py, int courtWidth, int courtHeight, int height, int width, int type
     ) {
         super(
                 INIT_VEL_X, INIT_VEL_Y, px, py, width, height, courtWidth, courtHeight,
@@ -43,15 +43,22 @@ public class Monster extends GameObj {
             if (img2 == null) {
                 img2 = ImageIO.read(new File(IMG_FILE2));
             }
+            if (img3 == null) {
+                img3 = ImageIO.read(new File(IMG_FILE3));
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if (choice == 0) {
-            imgToDraw = img1;
-            this.type = 0;
-        } else {
-            imgToDraw = img2;
-            this.type = 1;
+        switch (type) {
+            case 1:
+                imgToDraw = img2;
+                break;
+            case 2:
+                imgToDraw = img3;
+                break;
+            default:
+                imgToDraw = img1;
+                break;
         }
     }
 
@@ -88,8 +95,6 @@ public class Monster extends GameObj {
     @Override
     public String toString() {
         StringBuilder representation = new StringBuilder();
-        representation.append(this.type);
-        representation.append(", ");
         representation.append(this.getPx());
         representation.append(", ");
         representation.append(this.getPy());
@@ -102,51 +107,57 @@ public class Monster extends GameObj {
 
         return representation.toString();
     }
+}
 
-    /**
-     * This monster will stay in place and not move
-     * 
-     * @param px          initial x position
-     * @param py          initial y position
-     * @param courtWidth  maximum x bound
-     * @param courtHeight maximum y bound
-     * @return the monster object
-     */
-    public static Monster getRegularMonster(int px, int py, int courtWidth, int courtHeight) {
-        return new Monster(px, py, courtWidth, courtHeight, MONSTER_HEIGHT, MONSTER_WIDTH, 0);
+/**
+ * This monster will stay in place and not move
+ */
+class RegularMonster extends Monster {
+    public RegularMonster(int px, int py, int courtWidth, int courtHeight) {
+        super(px, py, courtWidth, courtHeight, MONSTER_HEIGHT, MONSTER_WIDTH, 0);
     }
 
-    /**
-     * This monster will move left to right
-     * 
-     * @param px          initial x position
-     * @param py          initial y position
-     * @param courtWidth  maximum x bound
-     * @param courtHeight maximum y bound
-     * @return the monster object
-     */
-    public static Monster getMovingMonster(int px, int py, int courtWidth, int courtHeight) {
-        Monster monster = new Monster(
-                px, py, courtWidth, courtHeight, MONSTER_HEIGHT, MONSTER_WIDTH, 1
-        ) {
+    @Override
+    public String toString() {
+        StringBuilder representation = new StringBuilder();
+        representation.append("0, ");
+        representation.append(super.toString());
+        return representation.toString();
+    }
+}
 
-            private static final int speed = 4;
 
-            @Override
-            public void move() {
+/**
+ * This monster will move left to right
+ */
+class MovingMonster extends Monster {
 
-                if (this.getPx() >= this.getMaxX()) {
-                    this.setVx(-speed);
-                } else if (this.getPx() <= 0) {
-                    this.setVx(speed);
-                }
+    public MovingMonster(int px, int py, int courtWidth, int courtHeight) {
+        super(px, py, courtWidth, courtHeight, MONSTER_HEIGHT, MONSTER_WIDTH, 1);
 
-                super.move();
-            }
-        };
+        this.setVx(4);
+        this.setHp(2);
+    }
 
-        monster.setHp(monster.getHp() + 1);
-        monster.setVx(4);
-        return monster;
+    private static final int speed = 4;
+
+    @Override
+    public void move() {
+
+        if (this.getPx() >= this.getMaxX()) {
+            this.setVx(-speed);
+        } else if (this.getPx() <= 0) {
+            this.setVx(speed);
+        }
+
+        super.move();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder representation = new StringBuilder();
+        representation.append("1, ");
+        representation.append(super.toString());
+        return representation.toString();
     }
 }
