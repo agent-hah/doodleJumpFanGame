@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Random;
 
 public abstract class Monster extends GameObj {
     public static final String IMG_FILE1 = "files/monster1.png";
@@ -155,26 +156,31 @@ class RegularMonster extends Monster {
  */
 class MovingMonster extends Monster {
 
-    public MovingMonster(int px, int py, int courtWidth, int courtHeight) {
-        super(px, py, courtWidth, courtHeight, MONSTER_HEIGHT, MONSTER_WIDTH, 1);
+    private static final int SPEED = 4;
+    private static final int INIT_HP = 2;
 
-        this.setVx(4);
-        this.setHp(2);
+    public MovingMonster(int px, int py, int courtWidth, int courtHeight) {
+        super(px, py, SPEED, 0, courtWidth, courtHeight, MONSTER_HEIGHT, MONSTER_WIDTH, 1, INIT_HP);
+
+        Random rng = new Random();
+        if (rng.nextBoolean()) {
+            this.setVx(SPEED);
+        } else {
+            this.setVx(-SPEED);
+        }
     }
 
     public MovingMonster(int px, int py, int vx, int vy, int courtWidth, int courtHeight, int hp) {
         super(px, py, vx, vy, courtWidth, courtHeight, MONSTER_HEIGHT, MONSTER_WIDTH, 1, hp);
     }
 
-    private static final int speed = 4;
-
     @Override
     public void move() {
 
         if (this.getPx() >= this.getMaxX()) {
-            this.setVx(-speed);
+            this.setVx(-SPEED);
         } else if (this.getPx() <= 0) {
-            this.setVx(speed);
+            this.setVx(SPEED);
         }
 
         super.move();
@@ -188,18 +194,17 @@ class MovingMonster extends Monster {
 
 class HomingMonster extends Monster {
 
-    private static final int speed = 3;
+    private static final int SPEED = 3;
+    private static final int INIT_HP = 2;
 
     private static Player player;
 
     public HomingMonster(int px, int py, int courtWidth, int courtHeight, Player player) {
-        super(px, py, courtWidth, courtHeight, MONSTER_HEIGHT, MONSTER_WIDTH, 2);
+        super(px, py, 0, 0, courtWidth, courtHeight, MONSTER_HEIGHT, MONSTER_WIDTH, 2, INIT_HP);
 
         if (player != null && !player.equals(HomingMonster.player)) {
             HomingMonster.player = player;
         }
-
-        this.setHp(2);
     }
 
     public HomingMonster(int px, int py, int vx, int vy, int courtWidth, int courtHeight, int hp, Player player) {
@@ -213,14 +218,14 @@ class HomingMonster extends Monster {
     @Override
     public void move() {
         if (this.getPx() >= player.getPx()) {
-            this.setVx(-speed);
+            this.setVx(-SPEED);
         } else {
-            this.setVx(speed);
+            this.setVx(SPEED);
         }
         if (this.getPy() >= player.getPy()) {
-            this.setVy(-speed);
+            this.setVy(-SPEED);
         } else  {
-            this.setVy(speed);
+            this.setVy(SPEED);
         }
 
         super.move();

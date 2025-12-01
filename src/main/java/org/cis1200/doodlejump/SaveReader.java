@@ -97,6 +97,7 @@ public class SaveReader {
             case 1 -> new BouncyPlatform(px, py, vx, vy, GameRegion.COURT_WIDTH, GameRegion.COURT_HEIGHT);
             case 2 -> new WeakPlatform(px, py, vx, vy, GameRegion.COURT_WIDTH, GameRegion.COURT_HEIGHT, state);
             case 3 -> new DisappearingPlatform(px, py, vx, vy, GameRegion.COURT_WIDTH, GameRegion.COURT_HEIGHT, state);
+            case 4 -> new MovingPlatform(px, py, vx, vy, GameRegion.COURT_WIDTH, GameRegion.COURT_HEIGHT);
             default -> throw new IllegalArgumentException("Invalid Type of Platform");
         };
     }

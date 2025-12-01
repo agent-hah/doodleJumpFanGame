@@ -46,8 +46,6 @@ public abstract class GameObj {
         this.ay = ay;
         this.hp = hp;
         this.affectVy = affectVy;
-
-        this.setPx(px, true);
     }
 
     // Getters

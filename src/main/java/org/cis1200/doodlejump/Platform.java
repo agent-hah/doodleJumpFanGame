@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Random;
 import javax.imageio.ImageIO;
 
 public abstract class Platform extends GameObj {
@@ -42,7 +43,7 @@ public abstract class Platform extends GameObj {
                 imgMoving = ImageIO.read(new File(IMG_FILE_MOVING));
             }
         } catch (IOException e) {
-            // TODO: create a page that will be pushed toward the game
+            e.printStackTrace();
         }
 
         imgToDraw = switch (type) {
@@ -50,6 +51,10 @@ public abstract class Platform extends GameObj {
             case 4 -> imgMoving;
             default -> img;
         };
+
+        if (type == 1) {
+            this.setAffectVy(BOUNCYAFFECTVY);
+        }
     }
 
     public Platform(int px, int py, int vx, int vy, int courtWidth, int courtHeight, int type) {
@@ -65,14 +70,17 @@ public abstract class Platform extends GameObj {
                 imgBouncy = ImageIO.read(new File(IMG_FILE_BOUNCY));
             }
         } catch (IOException e) {
-            // TODO: create a page that will be pushed toward the game
+            e.printStackTrace();
         }
 
+        imgToDraw = switch (type) {
+            case 1 -> imgBouncy;
+            case 4 -> imgMoving;
+            default -> img;
+        };
+
         if (type == 1) {
-            imgToDraw = imgBouncy;
             this.setAffectVy(BOUNCYAFFECTVY);
-        } else {
-            imgToDraw = img;
         }
     }
 
@@ -144,7 +152,7 @@ class WeakPlatform extends Platform {
                 imgBroken = ImageIO.read(new File(IMG_FILE_BROKEN));
             }
         } catch (IOException e) {
-            // TODO: Create some page
+            e.printStackTrace();
         }
         this.imgToDraw = img;
     }
@@ -159,7 +167,7 @@ class WeakPlatform extends Platform {
                 imgBroken = ImageIO.read(new File(IMG_FILE_BROKEN));
             }
         } catch (IOException e) {
-            //TODO: Do something
+            e.printStackTrace();
         }
 
         if (state == 1) {
@@ -274,25 +282,42 @@ class DisappearingPlatform extends Platform {
 
 class MovingPlatform extends Platform {
 
-    private static final int speed = 4;
+    private static final int SPEED = 4;
+    private static final int AFFECTVY = -35;
 
     public MovingPlatform(int px, int py, int courtWidth, int courtHeight) {
         super(px, py, courtWidth, courtHeight, 4);
+
+        Random rng = new Random();
+        if (rng.nextBoolean()) {
+            this.setVx(SPEED);
+        } else {
+            this.setVx(-SPEED);
+        }
+
+        this.setAffectVy(AFFECTVY);
     }
 
     public MovingPlatform(int px, int py, int vx, int vy, int courtWidth, int courtHeight) {
         super(px, py, vx, vy, courtWidth, courtHeight, 4);
+
+        this.setAffectVy(AFFECTVY);
     }
 
     @Override
     public void move() {
 
         if (this.getPx() >= this.getMaxX()) {
-            this.setVx(-speed);
+            this.setVx(-SPEED);
         } else if (this.getPx() <= 0) {
-            this.setVx(speed);
+            this.setVx(SPEED);
         }
 
         super.move();
+    }
+
+    @Override
+    public String toString() {
+        return  "4," + super.toString();
     }
 }

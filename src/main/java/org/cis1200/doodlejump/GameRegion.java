@@ -58,7 +58,7 @@ public class GameRegion extends JPanel {
             try {
                 img = ImageIO.read(new File(IMG_FILE));
             } catch (IOException e) {
-                // TODO: Create some screen
+                e.printStackTrace();
             }
         }
 
@@ -86,7 +86,12 @@ public class GameRegion extends JPanel {
             @Override
             public void keyReleased(KeyEvent e) {
                 if (!paused && playing) {
-                    player.setVx(0);
+                    if (e.getKeyCode() == KeyEvent.VK_D) {
+                        player.setVx(0);
+                    }
+                    if (e.getKeyCode() == KeyEvent.VK_A) {
+                        player.setVx(0);
+                    }
                 }
             }
         });
@@ -134,31 +139,46 @@ public class GameRegion extends JPanel {
             );
             newPlatform2 = createPlatform(py, 1);
         }
-
-        int dist = Math.abs(newPlatform2.getPx() - newPlatform1.getPx() - Platform.WIDTH);
-
-        while (newPlatform2.intersects(newPlatform1) | dist <= 30) {
-            newPlatform2.setPx(random.next(COURT_WIDTH - Platform.WIDTH));
-            dist = Math.min(
-                    Math.abs(newPlatform2.getPx() - newPlatform1.getPx() - Platform.WIDTH),
-                    Math.abs(newPlatform1.getPx() - newPlatform2.getPx() - Platform.WIDTH)
-            );
+        if (random.next(2) == 1) {
+            newPlatform1 = new MovingPlatform(random.next(COURT_WIDTH - Platform.WIDTH), py, COURT_WIDTH, COURT_HEIGHT);
+            newPlatform2 = null;
         }
 
-        LinkedList<Platform> toAdd = new LinkedList<>();
-        toAdd.add(newPlatform1);
-        toAdd.add(newPlatform2);
-        return toAdd;
+        if (newPlatform2 != null) {
+            int dist = Math.abs(newPlatform2.getPx() - newPlatform1.getPx() - Platform.WIDTH);
+
+            while (newPlatform2.intersects(newPlatform1) | dist <= 30) {
+                newPlatform2.setPx(random.next(COURT_WIDTH - Platform.WIDTH));
+                dist = Math.min(
+                        Math.abs(newPlatform2.getPx() - newPlatform1.getPx() - Platform.WIDTH),
+                        Math.abs(newPlatform1.getPx() - newPlatform2.getPx() - Platform.WIDTH)
+                );
+            }
+
+            LinkedList<Platform> toAdd = new LinkedList<>();
+            toAdd.add(newPlatform1);
+            toAdd.add(newPlatform2);
+            return toAdd;
+        } else {
+            LinkedList<Platform> toAdd = new LinkedList<>();
+            toAdd.add(newPlatform1);
+            return toAdd;
+        }
     }
 
     private LinkedList<LinkedList<Platform>> createInitialPlatforms() {
         LinkedList<LinkedList<Platform>> res = new LinkedList<>();
 
-        int maxCount = 9;
+        int maxCount = 8;
         for (int count = 0; count <= maxCount; count++) {
             int py = yDist * count + 20;
             res.add(getPlatformPair(py));
         }
+
+        Platform initialPlatform = new RegularPlatform(350, 740, Platform.WIDTH, Platform.HEIGHT);
+        LinkedList<Platform> toAdd = new LinkedList<>();
+        toAdd.add(initialPlatform);
+        res.add(toAdd);
 
         return res;
     }
@@ -380,6 +400,14 @@ public class GameRegion extends JPanel {
 
             createMonster();
 
+            for (LinkedList<Platform> platformPair : platforms) {
+                for  (Platform platform : platformPair) {
+                    if (platform.getClass() == MovingPlatform.class) {
+                        platform.move();
+                    }
+                }
+            }
+
             for (Monster monster : monsters) {
                 monster.move();
             }
@@ -465,7 +493,7 @@ public class GameRegion extends JPanel {
             }
 
             player.setPy(player.getPy() + scoreToAdd);
-            score += scoreToAdd / 10;
+            score += scoreToAdd / 5;
             this.scoreLabel.setText("Score: " + score);
         }
     }
@@ -528,7 +556,10 @@ public class GameRegion extends JPanel {
         if (platforms.peekLast() != null && platforms.peekLast().peekLast() != null &&
                 platforms.peekLast().peekLast().getPy() > COURT_HEIGHT) {
             platforms.removeLast();
-            int py = platforms.peekFirst().peekLast().getPy();
+            int py = 0;
+            if (platforms.peekFirst() != null && platforms.peekFirst().peekLast() != null) {
+                py = platforms.peekFirst().peekLast().getPy();
+            }
             platforms.addFirst(getPlatformPair(py - yDist));
             keepGoing = true;
         }
