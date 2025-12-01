@@ -28,16 +28,26 @@ public class Bullet extends GameObj {
      * @param courtHeight max Y bound
      *
      */
-    public Bullet(
-            int px, int py, int courtWidth, int courtHeight
-    ) {
+    public Bullet(int px, int py, int courtWidth, int courtHeight) {
         super(0, SPEED, px, py, SIZE, SIZE, courtWidth, courtHeight, ACCEL, ACCEL, HP, AFFECTVY);
 
         if (img == null) {
             try {
                 img = ImageIO.read(new File(IMG_FILE));
             } catch (IOException e) {
-                e.printStackTrace();
+                System.err.println("Error loading image file " + IMG_FILE);
+            }
+        }
+    }
+
+    public Bullet(int px, int py, int vx, int vy, int courtWidth, int courtHeight) {
+        super(vx, vy, px, py, SIZE, SIZE, courtWidth, courtHeight, ACCEL, ACCEL, HP, AFFECTVY);
+
+        if (img == null) {
+            try {
+                img = ImageIO.read(new File(IMG_FILE));
+            } catch (IOException e) {
+                System.err.println("Error loading image file " + IMG_FILE);
             }
         }
     }
@@ -89,11 +99,11 @@ public class Bullet extends GameObj {
     public String toString() {
         StringBuilder representation = new StringBuilder();
         representation.append(this.getPx());
-        representation.append(", ");
+        representation.append(",");
         representation.append(this.getPy());
-        representation.append(", ");
+        representation.append(",");
         representation.append(this.getVx());
-        representation.append(", ");
+        representation.append(",");
         representation.append(this.getVy());
 
         return representation.toString();

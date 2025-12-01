@@ -24,8 +24,6 @@ public abstract class Platform extends GameObj {
 
     private final BufferedImage imgToDraw;
 
-    private int type;
-
     public Platform(int px, int py, int courtWidth, int courtHeight, int type) {
         super(
                 INIT_VEL_X, INIT_VEL_Y, px, py, WIDTH, HEIGHT, courtWidth, courtHeight,
@@ -75,7 +73,7 @@ public abstract class Platform extends GameObj {
     public String toString() {
         StringBuilder representation = new StringBuilder();
         representation.append(this.getPx());
-        representation.append(", ");
+        representation.append(",");
         representation.append(this.getPy());
         return representation.toString();
     }
@@ -89,7 +87,7 @@ class RegularPlatform extends Platform {
     @Override
     public String toString() {
         StringBuilder representation = new StringBuilder();
-        representation.append("0, ");
+        representation.append("0,");
         representation.append(super.toString());
         return representation.toString();
     }
@@ -103,7 +101,7 @@ class BouncyPlatform extends Platform {
     @Override
     public String toString() {
         StringBuilder representation = new StringBuilder();
-        representation.append("1, ");
+        representation.append("1,");
         representation.append(super.toString());
         return representation.toString();
     }
@@ -117,6 +115,8 @@ class WeakPlatform extends Platform {
     private static BufferedImage imgBroken;
     private BufferedImage imgToDraw;
 
+    private int state = 0;
+
     public WeakPlatform(int px, int py, int courtWidth, int courtHeight) {
         super(px, py, courtWidth, courtHeight, 0);
         try {
@@ -129,14 +129,37 @@ class WeakPlatform extends Platform {
         } catch (IOException e) {
             // TODO: Create some page
         }
-        imgToDraw = img;
+        this.imgToDraw = img;
+    }
+
+    public WeakPlatform(int px, int py, int courtWidth, int courtHeight, int state) {
+        super(px, py, courtWidth, courtHeight, 0);
+        try {
+            if (img == null) {
+                img = ImageIO.read(new File(IMG_FILE));
+            }
+            if (imgBroken == null) {
+                imgBroken = ImageIO.read(new File(IMG_FILE_BROKEN));
+            }
+        } catch (IOException e) {
+            //TODO: Do something
+        }
+
+        if (state == 1) {
+            this.imgToDraw = imgBroken;
+            this.state = 1;
+        } else  {
+            this.imgToDraw = img;
+            this.state = 0;
+        }
     }
 
     @Override
     public void interact(GameObj that) {
         if (this.willIntersect(that)) {
             if (that.getClass() == Player.class) {
-                imgToDraw = imgBroken;
+                this.imgToDraw = imgBroken;
+                this.state = 1;
             }
         }
     }
@@ -153,7 +176,7 @@ class WeakPlatform extends Platform {
 
     @Override
     public void draw(Graphics g) {
-        g.drawImage(imgToDraw, this.getPx(), this.getPy(), this.getWidth(), this.getHeight(), null);
+        g.drawImage(this.imgToDraw, this.getPx(), this.getPy(), this.getWidth(), this.getHeight(), null);
         g.setColor(Color.RED);
         g.drawRect(this.getPx(), this.getPy(), this.getWidth(), this.getHeight());
     }
@@ -161,8 +184,10 @@ class WeakPlatform extends Platform {
     @Override
     public String toString() {
         StringBuilder representation = new StringBuilder();
-        representation.append("2, ");
+        representation.append("2,");
         representation.append(super.toString());
+        representation.append(",");
+        representation.append(this.state);
         return representation.toString();
     }
 }
@@ -214,7 +239,7 @@ class DisappearingPlatform extends Platform {
     @Override
     public String toString() {
         StringBuilder representation = new StringBuilder();
-        representation.append("3, ");
+        representation.append("3,");
         representation.append(super.toString());
         return representation.toString();
     }

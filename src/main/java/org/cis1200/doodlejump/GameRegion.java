@@ -255,11 +255,24 @@ public class GameRegion extends JPanel {
         player = new Player(COURT_WIDTH, COURT_HEIGHT);
         bullets = new LinkedList<>();
         monsters = new LinkedList<>();
+        this.score = 0;
         this.yDist = 80;
         platforms = createInitialPlatforms();
-        this.score = 0;
         scoreLabel.setText("Score: " + score);
         status.setText("Running Doodle Jump!");
+
+        wipeSave();
+    }
+
+    private void wipeSave() {
+        try {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(SAVE_FILE, false));
+            bw.write("empty");
+            bw.flush();
+            bw.close();
+        } catch (IOException e) {
+            status.setText("Error Clearing Save File. Please Do Not Save");
+        }
     }
 
     public void load() {
@@ -272,9 +285,104 @@ public class GameRegion extends JPanel {
         requestFocusInWindow();
 
         //TODO: set up loading capabilities
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(SAVE_FILE));
+            String line;
+            line = br.readLine();
+            if (line != null && !line.equals("empty")) {
+                this.score = Integer.parseInt(line);
+                System.out.println(line);
+                System.out.println(Integer.parseInt(line));
+                this.player = SaveReader.loadPlayer(br.readLine());
+
+                Platform newPlatform1;
+                Platform newPlatform2;
+
+                for (int count = 0; count < 10; count++) {
+                    LinkedList<Platform> toAdd = new LinkedList<>();
+                    newPlatform1 = SaveReader.loadPlatform(br.readLine());
+                    newPlatform2 = SaveReader.loadPlatform(br.readLine());
+                    if (newPlatform1 != null) {
+                        toAdd.add(newPlatform1);
+                    }
+                    if (newPlatform2 != null) {
+                        toAdd.add(newPlatform2);
+                    }
+                    platforms.add(toAdd);
+                }
+
+                line = br.readLine();
+
+                if (line == null) {
+                    return;
+                }
+
+                switch (line) {
+                    case "monsters":
+                        line = br.readLine();
+                        while (line != null && !line.equals("bullets")) {
+                            this.monsters.add(SaveReader.loadMonster(line));
+                            line = br.readLine();
+                        }
+                        if (line != null) {
+                            line = br.readLine();
+                            while (line != null) {
+                                this.bullets.add(SaveReader.loadBullet(line));
+                                line = br.readLine();
+                            }
+                        }
+                        break;
+                    case "bullets":
+                        line = br.readLine();
+                        while (line != null) {
+                            this.bullets.add(SaveReader.loadBullet(line));
+                            line = br.readLine();
+                        }
+                        break;
+                    default:
+                        break;
+                }
+
+                br.close();
+                if (player.getPy() <= 0 | player.getPy() >= COURT_WIDTH | platforms.size() != 10) {
+                    this.reset();
+                }
+
+                scoreLabel.setText("Score: " + score);
+                status.setText("Running Doodle Jump!");
+
+                wipeSave();
+                return;
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            try {
+                File file = new File(SAVE_FILE);
+                file.createNewFile();
+                BufferedWriter bw = new BufferedWriter(new FileWriter(SAVE_FILE, false));
+                bw.write("empty");
+                bw.flush();
+                bw.close();
+                this.reset();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+                this.reset();
+            }
+        } catch (IOException | IllegalArgumentException e) {
+            e.printStackTrace();
+            try {
+                BufferedWriter bw = new BufferedWriter(new FileWriter(SAVE_FILE, false));
+                bw.write("empty");
+                bw.flush();
+                bw.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+                this.reset();
+            }
+            this.reset();
+        }
 
         this.reset();
-
     }
 
     private void tick() {
@@ -337,9 +445,14 @@ public class GameRegion extends JPanel {
                 this.status.setText("Game Over!");
                 this.resetButton.setVisible(true);
                 this.pauseButton.setVisible(false);
+                this.resumeButton.setVisible(false);
+                this.saveButton.setVisible(false);
+                this.saveButton.setEnabled(true);
                 player.setVy(25);
                 player.setAy(0);
                 player.setVx(0);
+
+                wipeSave();
             }
         } else if (!playing) {
             scrollUp();
@@ -463,6 +576,8 @@ public class GameRegion extends JPanel {
         this.resetButton.setVisible(false);
         this.saveButton.setVisible(false);
         this.saveButton.setEnabled(true);
+
+        wipeSave();
     }
 
     public void save() {

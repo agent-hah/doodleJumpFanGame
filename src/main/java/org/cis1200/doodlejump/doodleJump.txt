@@ -1,3 +1,4 @@
+score
 player: init pos (px, py), vel (vx, vy)
 platforms:
 0 = reg plat

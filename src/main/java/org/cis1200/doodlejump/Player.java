@@ -40,6 +40,23 @@ public class Player extends GameObj {
         }
     }
 
+    public Player(int px, int py, int vx, int vy, int courtWidth, int courtHeight) {
+        super(
+                vx, vy, px, py, SIZE, SIZE, courtWidth, courtHeight,
+                INIT_ACCEL_X, INIT_ACCEL_Y, INIT_HP, AFFECTVY
+        );
+        try {
+            if (imgR == null) {
+                imgR = ImageIO.read((new File(IMG_FILE_R)));
+            }
+            if (imgL == null) {
+                imgL = ImageIO.read((new File(IMG_FILE_L)));
+            }
+        } catch (IOException e) {
+            System.err.println("Error loading image");
+        }
+    }
+
     public Bullet shootBullet() {
         int px = this.getPx() + Player.SIZE / 2;
         int py = this.getPy();
@@ -112,11 +129,11 @@ public class Player extends GameObj {
     public String toString() {
         StringBuilder representation  = new StringBuilder();
         representation.append(this.getPx());
-        representation.append(", ");
+        representation.append(",");
         representation.append(this.getPy());
-        representation.append(", ");
+        representation.append(",");
         representation.append(this.getVx());
-        representation.append(", ");
+        representation.append(",");
         representation.append(this.getVy());
 
         return representation.toString();
