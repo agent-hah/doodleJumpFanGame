@@ -9,7 +9,6 @@ import java.io.IOException;
 public class Monster extends GameObj {
     public static final String IMG_FILE1 = "files/monster1.png";
     public static final String IMG_FILE2 = "files/monster2.png";
-    public static final String IMG_FILE3 = "files/monster3.png";
 
     public static final int INIT_VEL_X = 0;
     public static final int INIT_VEL_Y = 0;
@@ -23,11 +22,12 @@ public class Monster extends GameObj {
 
     private final BufferedImage imgToDraw;
 
+    private int type;
+
     private boolean isDead = false;
 
     private static BufferedImage img1;
     private static BufferedImage img2;
-    private static BufferedImage img3;
 
     public Monster(
             int px, int py, int courtWidth, int courtHeight, int height, int width, int choice
@@ -43,16 +43,15 @@ public class Monster extends GameObj {
             if (img2 == null) {
                 img2 = ImageIO.read(new File(IMG_FILE2));
             }
-            if (img3 == null) {
-                img3 = ImageIO.read(new File(IMG_FILE3));
-            }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if (choice == 1) {
+        if (choice == 0) {
             imgToDraw = img1;
+            this.type = 0;
         } else {
-            imgToDraw = img3;
+            imgToDraw = img2;
+            this.type = 1;
         }
     }
 
@@ -86,6 +85,24 @@ public class Monster extends GameObj {
         g.drawImage(imgToDraw, this.getPx(), this.getPy(), this.getHeight(), this.getWidth(), null);
     }
 
+    @Override
+    public String toString() {
+        StringBuilder representation = new StringBuilder();
+        representation.append(this.type);
+        representation.append(", ");
+        representation.append(this.getPx());
+        representation.append(", ");
+        representation.append(this.getPy());
+        representation.append(", ");
+        representation.append(this.getVx());
+        representation.append(", ");
+        representation.append(this.getVy());
+        representation.append(", ");
+        representation.append(this.getHp());
+
+        return representation.toString();
+    }
+
     /**
      * This monster will stay in place and not move
      * 
@@ -96,7 +113,7 @@ public class Monster extends GameObj {
      * @return the monster object
      */
     public static Monster getRegularMonster(int px, int py, int courtWidth, int courtHeight) {
-        return new Monster(px, py, courtWidth, courtHeight, MONSTER_HEIGHT, MONSTER_WIDTH, 1);
+        return new Monster(px, py, courtWidth, courtHeight, MONSTER_HEIGHT, MONSTER_WIDTH, 0);
     }
 
     /**
@@ -110,7 +127,7 @@ public class Monster extends GameObj {
      */
     public static Monster getMovingMonster(int px, int py, int courtWidth, int courtHeight) {
         Monster monster = new Monster(
-                px, py, courtWidth, courtHeight, MONSTER_HEIGHT, MONSTER_WIDTH, 3
+                px, py, courtWidth, courtHeight, MONSTER_HEIGHT, MONSTER_WIDTH, 1
         ) {
 
             private static final int speed = 4;

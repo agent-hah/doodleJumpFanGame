@@ -6,8 +6,7 @@ import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.List;
 
@@ -27,6 +26,14 @@ public class GameRegion extends JPanel {
 
     private final JLabel scoreLabel;
 
+    private final JButton resumeButton;
+
+    private final JButton pauseButton;
+
+    private final JButton resetButton;
+
+    private final JButton saveButton;
+
     private int score = 0;
 
     public static final int COURT_WIDTH = 800;
@@ -41,9 +48,10 @@ public class GameRegion extends JPanel {
 
     private boolean paused = false;
 
-    public static final String SAVE_FILE = "files/doodleJump.txt";
+    public static final String SAVE_FILE = "files/saveFile.txt";
 
-    public GameRegion(JLabel status, JLabel score) {
+    public GameRegion(JLabel status, JLabel score, JButton resume, JButton pause, JButton reset,
+                      JButton save) {
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
         if (img == null) {
@@ -81,6 +89,10 @@ public class GameRegion extends JPanel {
 
         this.status = status;
         this.scoreLabel = score;
+        this.resumeButton = resume;
+        this.pauseButton = pause;
+        this.resetButton = reset;
+        this.saveButton = save;
     }
 
     private Platform createPlatform(int py, int choice) {
@@ -236,10 +248,21 @@ public class GameRegion extends JPanel {
         this.score = 0;
         scoreLabel.setText("Score: " + score);
         status.setText("Running Doodle Jump!");
+    }
 
+    public void load() {
         playing = true;
         paused = false;
+        this.pauseButton.setVisible(true);
+        this.resumeButton.setVisible(false);
+        this.resetButton.setVisible(false);
+        this.saveButton.setVisible(false);
         requestFocusInWindow();
+
+        //TODO: set up loading capabilities
+
+        this.reset();
+
     }
 
     private void tick() {
@@ -277,6 +300,7 @@ public class GameRegion extends JPanel {
             }
 
             for (Monster monster : monsters) {
+                player.interact(monster);
                 for (Bullet bullet : bullets) {
                     monster.interact(bullet);
                     bullet.interact(monster);
@@ -295,6 +319,19 @@ public class GameRegion extends JPanel {
                     }
                 }
             }
+
+            if (player.getPy() >= COURT_HEIGHT | player.getHp() == 0) {
+                playing = false;
+                this.status.setText("Game Over!");
+                this.resetButton.setVisible(true);
+                this.pauseButton.setVisible(false);
+            }
+        } else if (!playing) {
+            scrollUp();
+            player.setVy(25);
+            if (player.getPy() <= COURT_HEIGHT + 10) {
+                player.move();
+            }
         }
 
         repaint();
@@ -304,23 +341,11 @@ public class GameRegion extends JPanel {
         if (player.getPy() < COURT_HEIGHT / 2) {
             int scoreToAdd = (COURT_HEIGHT / 2) - player.getPy();
 
-            for (List<Platform> platforms : platforms) {
-                for (Platform platform : platforms) {
-                    platform.setPy(platform.getPy() + scoreToAdd);
-                }
-            }
-
-            for (Monster monster : monsters) {
-                monster.setPy(monster.getPy() + scoreToAdd);
-            }
-
-            for (Bullet bullet : bullets) {
-                bullet.setPy(bullet.getPy() + scoreToAdd);
-            }
+            scroll(scoreToAdd);
 
             boolean fixing = true;
             while (fixing) {
-                fixing = propagate();
+                fixing = propagateUpward();
             }
 
             player.setPy(player.getPy() + scoreToAdd);
@@ -329,7 +354,59 @@ public class GameRegion extends JPanel {
         }
     }
 
-    private boolean propagate() {
+    private void scroll(int scoreToAdd) {
+        for (List<Platform> platforms : platforms) {
+            for (Platform platform : platforms) {
+                platform.setPy(platform.getPy() + scoreToAdd);
+            }
+        }
+
+        for (Monster monster : monsters) {
+            monster.setPy(monster.getPy() + scoreToAdd);
+        }
+
+        for (Bullet bullet : bullets) {
+            bullet.setPy(bullet.getPy() + scoreToAdd);
+        }
+    }
+
+    private void scrollUp() {
+        int step = -30;
+
+        if (!platforms.isEmpty() | !monsters.isEmpty() | !bullets.isEmpty()) {
+            scroll(step);
+            player.setPy(player.getPy() + step);
+        }
+
+        boolean fixing = true;
+        while (fixing) {
+            fixing = propagateDownward();
+        }
+    }
+
+    private boolean propagateDownward() {
+        boolean keepGoing = false;
+
+        if (platforms.peekFirst() != null && platforms.peekFirst().peekFirst() != null &&
+                platforms.peekFirst().peekFirst().getPy() <= 0) {
+            platforms.removeFirst();
+            keepGoing = true;
+        }
+
+        if (monsters.peekFirst() != null && monsters.peekLast().getPy() <= 0) {
+            monsters.removeFirst();
+            keepGoing = true;
+        }
+
+        if (bullets.peekFirst() != null && bullets.peekLast().getPy() <= 0) {
+            bullets.removeFirst();
+            keepGoing = true;
+        }
+
+        return keepGoing;
+    }
+
+    private boolean propagateUpward() {
         boolean keepGoing = false;
 
         if (platforms.peekLast() != null && platforms.peekLast().peekLast() != null &&
@@ -355,6 +432,10 @@ public class GameRegion extends JPanel {
 
     public void pause() {
         this.paused = true;
+        this.pauseButton.setVisible(false);
+        this.resumeButton.setVisible(true);
+        this.resetButton.setVisible(true);
+        this.saveButton.setVisible(true);
         this.status.setText("Paused");
     }
 
@@ -362,10 +443,64 @@ public class GameRegion extends JPanel {
         requestFocusInWindow();
         this.paused = false;
         this.status.setText("Running Doodle Jump!");
+        this.pauseButton.setVisible(true);
+        this.resumeButton.setVisible(false);
+        this.resetButton.setVisible(false);
+        this.saveButton.setVisible(false);
     }
 
-    public void load() {
+    public void save() {
+        BufferedWriter bw;
+        try {
+            bw = new BufferedWriter(new FileWriter(SAVE_FILE, false));
 
+            bw.write(this.player.toString());
+            bw.flush();
+            bw.newLine();
+
+            for (LinkedList<Platform> platforms : platforms) {
+                for (Platform platform : platforms) {
+                    bw.write(platform.toString());
+                    bw.flush();
+                    bw.newLine();
+                    if (platforms.size() == 1) {
+                        bw.write("null");
+                        bw.flush();
+                        bw.newLine();
+                    }
+                }
+            }
+
+            if (!monsters.isEmpty()) {
+                bw.write("monsters");
+                bw.flush();
+                bw.newLine();
+            }
+
+            for (Monster monster : monsters) {
+                bw.write(monster.toString());
+                bw.flush();
+                bw.newLine();
+            }
+
+            if (!bullets.isEmpty()) {
+                bw.write("bullets");
+                bw.flush();
+                bw.newLine();
+            }
+
+            for (Bullet bullet : bullets) {
+                bw.write(bullet.toString());
+                bw.flush();
+                bw.newLine();
+            }
+            this.status.setText("Saved Doodle Jump! Ok to Exit Game!");
+            this.saveButton.setEnabled(false);
+        } catch (IOException e) {
+            this.status.setText("Error while writing file! Please Don't Close the Application and "
+                    + "Just Continue Your Game!");
+            this.saveButton.setEnabled(false);
+        }
     }
 
     @Override

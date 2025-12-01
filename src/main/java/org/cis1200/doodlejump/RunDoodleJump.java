@@ -19,31 +19,30 @@ public class RunDoodleJump implements Runnable {
         // Score panel
         final JLabel scoreLabel = new JLabel("Score: 0");
 
-        // Main playing area
-        final GameRegion court = new GameRegion(status, scoreLabel);
-        frame.add(court, BorderLayout.CENTER);
-
         // Control Panel with buttons
         final JButton resume = new JButton("Resume");
         final JButton reset = new JButton("Reset");
         final JButton pause = new JButton("Pause");
+        final JButton save = new JButton("Save");
+
+        // Main playing area
+        final GameRegion court = new GameRegion(status, scoreLabel, resume, pause, reset, save);
+        frame.add(court, BorderLayout.CENTER);
 
         resume.addActionListener(e -> {
             court.unpause();
-            resume.setVisible(false);
-            reset.setVisible(false);
         });
 
         reset.addActionListener(e -> {
             court.reset();
-            resume.setVisible(false);
-            reset.setVisible(false);
         });
 
         pause.addActionListener(e -> {
             court.pause();
-            resume.setVisible(true);
-            reset.setVisible(true);
+        });
+
+        save.addActionListener(e -> {
+            court.save();
         });
 
         final JPanel control_panel = new JPanel();
@@ -53,9 +52,7 @@ public class RunDoodleJump implements Runnable {
         control_panel.add(scoreLabel);
         control_panel.add(resume);
         control_panel.add(reset);
-
-        resume.setVisible(false);
-        reset.setVisible(false);
+        control_panel.add(save);
 
         // Put the frame on the screen
         frame.pack();
@@ -63,6 +60,6 @@ public class RunDoodleJump implements Runnable {
         frame.setVisible(true);
 
         // Start game
-        court.reset();
+        court.load();
     }
 }

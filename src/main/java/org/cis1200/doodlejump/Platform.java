@@ -22,6 +22,8 @@ public class Platform extends GameObj {
     private static BufferedImage img;
     private static BufferedImage imgBouncy;
 
+    private int type;
+
     public Platform(int px, int py, int courtWidth, int courtHeight, int choose) {
         super(
                 INIT_VEL_X, INIT_VEL_Y, px, py, WIDTH, HEIGHT, courtWidth, courtHeight,
@@ -37,9 +39,22 @@ public class Platform extends GameObj {
         } catch (IOException e) {
             // TODO: create a page that will be pushed toward the game
         }
+
+        this.type = 0;
+
         if (choose == 1) {
             this.setAffectVy(BOUNCYAFFECTVY);
+            this.type = 1;
         }
+    }
+
+    public void setTypeRepresentation(int type) {
+        if (type > 3) {
+            type = 3;
+        } else if (type < 0) {
+            type = 0;
+        }
+        this.type = type;
     }
 
     public void setPx(int px) {
@@ -65,6 +80,17 @@ public class Platform extends GameObj {
         g.drawImage(imgToDraw, this.getPx(), this.getPy(), this.getWidth(), this.getHeight(), null);
         g.setColor(Color.RED);
         g.drawRect(this.getPx(), this.getPy(), this.getWidth(), this.getHeight());
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder representation = new StringBuilder();
+        representation.append(this.type);
+        representation.append(", ");
+        representation.append(this.getPx());
+        representation.append(", ");
+        representation.append(this.getPy());
+        return representation.toString();
     }
 
     public static Platform getRegPlatform(int px, int py, int courtWidth, int courtHeight) {

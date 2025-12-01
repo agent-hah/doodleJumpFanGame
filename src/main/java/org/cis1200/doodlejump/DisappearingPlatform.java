@@ -30,11 +30,12 @@ public class DisappearingPlatform extends Platform {
             img2 = ImageIO.read(new File(IMG_FILE_2));
             img3 = ImageIO.read(new File(IMG_FILE_3));
         } catch (IOException e) {
-            // TODO: Do something here?
+            e.printStackTrace();
         }
         imgToDraw = img1;
 
         state = -Math.min(((courtHeight - this.getPy()) / 2), rng.next(100));
+        this.setTypeRepresentation(3);
     }
 
     public boolean tick() {

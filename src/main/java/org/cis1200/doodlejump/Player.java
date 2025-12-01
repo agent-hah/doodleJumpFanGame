@@ -81,11 +81,14 @@ public class Player extends GameObj {
 
     @Override
     public void interact(GameObj that) {
-        if (this.willIntersect(that) | this.intersects(that)) {
-            if (that instanceof Platform && that.getClass() != WeakPlatform.class) {
+        if (that instanceof Platform && that.getClass() != WeakPlatform.class) {
+            if (this.willIntersect(that) | this.intersects(that)) {
                 this.setVy(that.getAffectVy());
             }
-            // TODO: add interaction for monster class
+        } else if (that instanceof Monster) {
+            if (this.intersects(that)) {
+                this.setHp(0);
+            }
         }
     }
 
@@ -103,5 +106,19 @@ public class Player extends GameObj {
             );
         }
         g.drawRect(this.getPx(), this.getPy(), this.getWidth(), this.getHeight());
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder representation  = new StringBuilder();
+        representation.append(this.getPx());
+        representation.append(", ");
+        representation.append(this.getPy());
+        representation.append(", ");
+        representation.append(this.getVx());
+        representation.append(", ");
+        representation.append(this.getVy());
+
+        return representation.toString();
     }
 }

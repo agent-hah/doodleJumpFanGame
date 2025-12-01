@@ -84,4 +84,18 @@ public class Bullet extends GameObj {
     public void draw(Graphics g) {
         g.drawImage(img, this.getPx(), this.getPy(), SIZE, SIZE, null);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder representation = new StringBuilder();
+        representation.append(this.getPx());
+        representation.append(", ");
+        representation.append(this.getPy());
+        representation.append(", ");
+        representation.append(this.getVx());
+        representation.append(", ");
+        representation.append(this.getVy());
+
+        return representation.toString();
+    }
 }

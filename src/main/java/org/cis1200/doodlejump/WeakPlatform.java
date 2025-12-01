@@ -26,6 +26,7 @@ public class WeakPlatform extends Platform {
             // TODO: Create some page
         }
         imgToDraw = img;
+        this.setTypeRepresentation(2);
     }
 
     @Override
