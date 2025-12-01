@@ -148,7 +148,6 @@ public abstract class GameObj {
         this.py += this.vy;
 
         accel();
-        clip();
     }
 
     /**
@@ -162,6 +161,11 @@ public abstract class GameObj {
                 && this.py + this.height >= that.py
                 && that.px + that.width >= this.px
                 && that.py + that.height >= this.py);
+    }
+
+    @Override
+    public String toString() {
+        return this.getPx() + "," + this.getPy() + "," + this.getVx() + "," + this.getVy();
     }
 
     /**

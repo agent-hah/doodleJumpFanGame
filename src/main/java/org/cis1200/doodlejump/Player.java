@@ -122,20 +122,15 @@ public class Player extends GameObj {
                     this.getHeight(), null
             );
         }
-        g.drawRect(this.getPx(), this.getPy(), this.getWidth(), this.getHeight());
     }
 
     @Override
-    public String toString() {
-        StringBuilder representation  = new StringBuilder();
-        representation.append(this.getPx());
-        representation.append(",");
-        representation.append(this.getPy());
-        representation.append(",");
-        representation.append(this.getVx());
-        representation.append(",");
-        representation.append(this.getVy());
-
-        return representation.toString();
+    public void move() {
+        super.move();
+        if (this.getPx() < 0) {
+            super.setPx(this.getMaxX(), true);
+        } else if (this.getPx() > this.getMaxX()) {
+            super.setPx(0, true);
+        }
     }
 }

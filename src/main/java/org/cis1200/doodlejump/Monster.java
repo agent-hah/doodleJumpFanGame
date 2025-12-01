@@ -63,11 +63,11 @@ public abstract class Monster extends GameObj {
     }
 
     public Monster(
-            int px, int py, int vx, int vy, int courtWidth, int courtHeight, int height, int width, int type
+            int px, int py, int vx, int vy, int courtWidth, int courtHeight, int height, int width, int type, int hp
     ) {
         super(
-                INIT_VEL_X, INIT_VEL_Y, px, py, width, height, courtWidth, courtHeight,
-                INIT_ACCEL_X, INIT_ACCEL_Y, INIT_HP, AFFECTVY
+                vx, vy, px, py, width, height, courtWidth, courtHeight,
+                INIT_ACCEL_X, INIT_ACCEL_Y, hp, AFFECTVY
         );
         try {
             if (img1 == null) {
@@ -127,18 +127,7 @@ public abstract class Monster extends GameObj {
 
     @Override
     public String toString() {
-        StringBuilder representation = new StringBuilder();
-        representation.append(this.getPx());
-        representation.append(",");
-        representation.append(this.getPy());
-        representation.append(",");
-        representation.append(this.getVx());
-        representation.append(",");
-        representation.append(this.getVy());
-        representation.append(",");
-        representation.append(this.getHp());
-
-        return representation.toString();
+        return super.toString() + "," + this.getHp();
     }
 }
 
@@ -151,16 +140,12 @@ class RegularMonster extends Monster {
     }
 
     public RegularMonster(int px, int py, int vx, int vy, int courtWidth, int courtHeight, int hp) {
-        super(px, py, vx, vy, courtWidth, courtHeight, MONSTER_HEIGHT, MONSTER_WIDTH, 0);
-        this.setHp(hp);
+        super(px, py, vx, vy, courtWidth, courtHeight, MONSTER_HEIGHT, MONSTER_WIDTH, 0, hp);
     }
 
     @Override
     public String toString() {
-        StringBuilder representation = new StringBuilder();
-        representation.append("0,");
-        representation.append(super.toString());
-        return representation.toString();
+        return "0," + super.toString();
     }
 }
 
@@ -178,9 +163,7 @@ class MovingMonster extends Monster {
     }
 
     public MovingMonster(int px, int py, int vx, int vy, int courtWidth, int courtHeight, int hp) {
-        super(px, py, vx, vy, courtWidth, courtHeight, MONSTER_HEIGHT, MONSTER_WIDTH, 1);
-
-        this.setHp(hp);
+        super(px, py, vx, vy, courtWidth, courtHeight, MONSTER_HEIGHT, MONSTER_WIDTH, 1, hp);
     }
 
     private static final int speed = 4;
@@ -199,9 +182,52 @@ class MovingMonster extends Monster {
 
     @Override
     public String toString() {
-        StringBuilder representation = new StringBuilder();
-        representation.append("1,");
-        representation.append(super.toString());
-        return representation.toString();
+        return "1," + super.toString();
+    }
+}
+
+class HomingMonster extends Monster {
+
+    private static final int speed = 3;
+
+    private static Player player;
+
+    public HomingMonster(int px, int py, int courtWidth, int courtHeight, Player player) {
+        super(px, py, courtWidth, courtHeight, MONSTER_HEIGHT, MONSTER_WIDTH, 2);
+
+        if (player != null && !player.equals(HomingMonster.player)) {
+            HomingMonster.player = player;
+        }
+
+        this.setHp(2);
+    }
+
+    public HomingMonster(int px, int py, int vx, int vy, int courtWidth, int courtHeight, int hp, Player player) {
+        super(px, py, vx, vy, courtWidth, courtHeight, MONSTER_HEIGHT, MONSTER_WIDTH, 2, hp);
+
+        if (player != null && !HomingMonster.player.equals(player)) {
+            HomingMonster.player = player;
+        }
+    }
+
+    @Override
+    public void move() {
+        if (this.getPx() >= player.getPx()) {
+            this.setVx(-speed);
+        } else {
+            this.setVx(speed);
+        }
+        if (this.getPy() >= player.getPy()) {
+            this.setVy(-speed);
+        } else  {
+            this.setVy(speed);
+        }
+
+        super.move();
+    }
+
+    @Override
+    public String toString() {
+        return "2," + super.toString();
     }
 }

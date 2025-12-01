@@ -207,7 +207,8 @@ public class GameRegion extends JPanel {
                     );
                     break;
                 case 3:
-                    // TODO: Create saucer monster
+                    toAdd = new HomingMonster(random.next(COURT_WIDTH - Monster.MONSTER_WIDTH),
+                            py, COURT_WIDTH, COURT_HEIGHT, player);
                 default:
                     break;
             }
@@ -226,7 +227,8 @@ public class GameRegion extends JPanel {
                     );
                     break;
                 case 3:
-                    // TODO: Create saucer monster
+                    new HomingMonster(random.next(COURT_WIDTH - Monster.MONSTER_WIDTH),
+                            py, COURT_WIDTH, COURT_HEIGHT, player);
                     break;
                 default:
                     break;
@@ -284,7 +286,6 @@ public class GameRegion extends JPanel {
         this.saveButton.setVisible(false);
         requestFocusInWindow();
 
-        //TODO: set up loading capabilities
         try {
             BufferedReader br = new BufferedReader(new FileReader(SAVE_FILE));
             String line;
@@ -321,7 +322,7 @@ public class GameRegion extends JPanel {
                     case "monsters":
                         line = br.readLine();
                         while (line != null && !line.equals("bullets")) {
-                            this.monsters.add(SaveReader.loadMonster(line));
+                            this.monsters.add(SaveReader.loadMonster(line, this.player));
                             line = br.readLine();
                         }
                         if (line != null) {
@@ -351,7 +352,6 @@ public class GameRegion extends JPanel {
                 scoreLabel.setText("Score: " + score);
                 status.setText("Running Doodle Jump!");
 
-                wipeSave();
                 return;
             }
         } catch (FileNotFoundException e) {
@@ -359,27 +359,16 @@ public class GameRegion extends JPanel {
             try {
                 File file = new File(SAVE_FILE);
                 file.createNewFile();
-                BufferedWriter bw = new BufferedWriter(new FileWriter(SAVE_FILE, false));
-                bw.write("empty");
-                bw.flush();
-                bw.close();
-                this.reset();
             } catch (IOException e1) {
                 e1.printStackTrace();
                 this.reset();
+            } finally {
+                wipeSave();
             }
         } catch (IOException | IllegalArgumentException e) {
-            e.printStackTrace();
-            try {
-                BufferedWriter bw = new BufferedWriter(new FileWriter(SAVE_FILE, false));
-                bw.write("empty");
-                bw.flush();
-                bw.close();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-                this.reset();
-            }
             this.reset();
+        } finally {
+            wipeSave();
         }
 
         this.reset();

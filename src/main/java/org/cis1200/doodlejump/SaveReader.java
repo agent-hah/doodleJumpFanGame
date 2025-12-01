@@ -70,13 +70,17 @@ public class SaveReader {
         if (inputs.isEmpty()) {
             throw new IllegalArgumentException("Invalid Size of Inputs");
         }
-        if ((inputs.size() != 3 && inputs.getFirst() != 2) | (inputs.size() != 4 && inputs.getFirst() == 2)) {
+        if ((inputs.size() != 5 && inputs.getFirst() != 2) | (inputs.size() != 6 && inputs.getFirst() == 2)
+                | (inputs.size() != 6 && inputs.getFirst() == 3)) {
             throw new IllegalArgumentException("Invalid Size of Inputs");
         }
         int type = inputs.removeFirst();
         int px = inputs.removeFirst();
         int py = inputs.removeFirst();
-        int state = 0;
+        int vx = inputs.removeFirst();
+        int vy = inputs.removeFirst();
+
+        int state = -1;
         if (type == 2) {
             state = inputs.removeFirst();
             if (state != 1 && state != 0) {
@@ -84,16 +88,20 @@ public class SaveReader {
             }
         }
 
+        if (type == 3) {
+            state = inputs.removeFirst();
+        }
+
         return switch (type) {
-            case 0 -> new RegularPlatform(px, py, GameRegion.COURT_WIDTH, GameRegion.COURT_HEIGHT);
-            case 1 -> new BouncyPlatform(px, py, GameRegion.COURT_WIDTH, GameRegion.COURT_HEIGHT);
-            case 2 -> new WeakPlatform(px, py, GameRegion.COURT_WIDTH, GameRegion.COURT_HEIGHT, state);
-            case 3 -> new DisappearingPlatform(px, py, GameRegion.COURT_WIDTH, GameRegion.COURT_HEIGHT);
+            case 0 -> new RegularPlatform(px, py, vx, vy, GameRegion.COURT_WIDTH, GameRegion.COURT_HEIGHT);
+            case 1 -> new BouncyPlatform(px, py, vx, vy, GameRegion.COURT_WIDTH, GameRegion.COURT_HEIGHT);
+            case 2 -> new WeakPlatform(px, py, vx, vy, GameRegion.COURT_WIDTH, GameRegion.COURT_HEIGHT, state);
+            case 3 -> new DisappearingPlatform(px, py, vx, vy, GameRegion.COURT_WIDTH, GameRegion.COURT_HEIGHT, state);
             default -> throw new IllegalArgumentException("Invalid Type of Platform");
         };
     }
 
-    public static Monster loadMonster(String line) {
+    public static Monster loadMonster(String line, Player player) {
         if (line == null) {
             throw new IllegalArgumentException();
         }
@@ -113,6 +121,7 @@ public class SaveReader {
         return switch (type) {
             case 0 -> new RegularMonster(px, py, vx, vy, GameRegion.COURT_WIDTH, GameRegion.COURT_HEIGHT, hp);
             case 1 -> new MovingMonster(px, py, vx, vy, GameRegion.COURT_WIDTH, GameRegion.COURT_HEIGHT, hp);
+            case 2 -> new HomingMonster(px, py, vx, vy, GameRegion.COURT_WIDTH, GameRegion.COURT_HEIGHT, hp, player);
             default -> throw new IllegalArgumentException("Invalid Type of Monster");
         };
     }

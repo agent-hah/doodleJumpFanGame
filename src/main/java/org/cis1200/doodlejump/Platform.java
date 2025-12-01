@@ -9,6 +9,7 @@ import javax.imageio.ImageIO;
 public abstract class Platform extends GameObj {
     public static final String IMG_FILE = "files/platform.png";
     public static final String IMG_FILE_BOUNCY = "files/bouncyPlatform.png";
+    public static final String IMG_FILE_MOVING = "files/movingPlatform.png";
     public static final int WIDTH = 100;
     public static final int HEIGHT = 20;
     public static final int INIT_VEL_X = 0;
@@ -21,12 +22,39 @@ public abstract class Platform extends GameObj {
 
     private static BufferedImage img;
     private static BufferedImage imgBouncy;
+    private static BufferedImage imgMoving;
 
     private final BufferedImage imgToDraw;
 
     public Platform(int px, int py, int courtWidth, int courtHeight, int type) {
         super(
                 INIT_VEL_X, INIT_VEL_Y, px, py, WIDTH, HEIGHT, courtWidth, courtHeight,
+                INIT_ACCEL_X, INIT_ACCEL_Y, HP, AFFECTVY
+        );
+        try {
+            if (img == null) {
+                img = ImageIO.read(new File(IMG_FILE));
+            }
+            if (imgBouncy == null) {
+                imgBouncy = ImageIO.read(new File(IMG_FILE_BOUNCY));
+            }
+            if (imgMoving == null) {
+                imgMoving = ImageIO.read(new File(IMG_FILE_MOVING));
+            }
+        } catch (IOException e) {
+            // TODO: create a page that will be pushed toward the game
+        }
+
+        imgToDraw = switch (type) {
+            case 1 -> imgBouncy;
+            case 4 -> imgMoving;
+            default -> img;
+        };
+    }
+
+    public Platform(int px, int py, int vx, int vy, int courtWidth, int courtHeight, int type) {
+        super(
+                vx, vy, px, py, WIDTH, HEIGHT, courtWidth, courtHeight,
                 INIT_ACCEL_X, INIT_ACCEL_Y, HP, AFFECTVY
         );
         try {
@@ -58,24 +86,11 @@ public abstract class Platform extends GameObj {
     }
 
     @Override
-    public void interact(GameObj that) {
-        return;
-    }
+    public void interact(GameObj that) {}
 
     @Override
     public void draw(Graphics g) {
         g.drawImage(imgToDraw, this.getPx(), this.getPy(), this.getWidth(), this.getHeight(), null);
-        g.setColor(Color.RED);
-        g.drawRect(this.getPx(), this.getPy(), this.getWidth(), this.getHeight());
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder representation = new StringBuilder();
-        representation.append(this.getPx());
-        representation.append(",");
-        representation.append(this.getPy());
-        return representation.toString();
     }
 }
 
@@ -84,12 +99,13 @@ class RegularPlatform extends Platform {
         super(px, py, courtWidth, courtHeight, 0);
     }
 
+    public RegularPlatform(int px, int py, int vx, int vy, int courtWidth, int courtHeight) {
+        super(px, py, vx, vy, courtWidth, courtHeight, 0);
+    }
+
     @Override
     public String toString() {
-        StringBuilder representation = new StringBuilder();
-        representation.append("0,");
-        representation.append(super.toString());
-        return representation.toString();
+        return "0," + super.toString();
     }
 }
 
@@ -98,12 +114,13 @@ class BouncyPlatform extends Platform {
         super(px, py, courtWidth, courtHeight, 1);
     }
 
+    public BouncyPlatform(int px, int py, int vx, int vy, int courtWidth, int courtHeight) {
+        super(px, py, vx, vy, courtWidth, courtHeight, 1);
+    }
+
     @Override
     public String toString() {
-        StringBuilder representation = new StringBuilder();
-        representation.append("1,");
-        representation.append(super.toString());
-        return representation.toString();
+        return "1," + super.toString();
     }
 }
 
@@ -132,8 +149,8 @@ class WeakPlatform extends Platform {
         this.imgToDraw = img;
     }
 
-    public WeakPlatform(int px, int py, int courtWidth, int courtHeight, int state) {
-        super(px, py, courtWidth, courtHeight, 0);
+    public WeakPlatform(int px, int py, int vx, int vy, int courtWidth, int courtHeight, int state) {
+        super(px, py, vx, vy, courtWidth, courtHeight, 0);
         try {
             if (img == null) {
                 img = ImageIO.read(new File(IMG_FILE));
@@ -177,18 +194,11 @@ class WeakPlatform extends Platform {
     @Override
     public void draw(Graphics g) {
         g.drawImage(this.imgToDraw, this.getPx(), this.getPy(), this.getWidth(), this.getHeight(), null);
-        g.setColor(Color.RED);
-        g.drawRect(this.getPx(), this.getPy(), this.getWidth(), this.getHeight());
     }
 
     @Override
     public String toString() {
-        StringBuilder representation = new StringBuilder();
-        representation.append("2,");
-        representation.append(super.toString());
-        representation.append(",");
-        representation.append(this.state);
-        return representation.toString();
+        return "2," + super.toString() + "," + this.state;
     }
 }
 
@@ -222,6 +232,21 @@ class DisappearingPlatform extends Platform {
         state = -Math.min(((courtHeight - this.getPy()) / 2), rng.next(100));
     }
 
+    public DisappearingPlatform(int px, int py, int vx, int vy, int courtWidth, int courtHeight, int state) {
+        super(px, py, vx, vy, courtWidth, courtHeight, 0);
+
+        try {
+            img1 = ImageIO.read(new File(IMG_FILE_1));
+            img2 = ImageIO.read(new File(IMG_FILE_2));
+            img3 = ImageIO.read(new File(IMG_FILE_3));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        imgToDraw = img1;
+
+        this.state = state;
+    }
+
     public boolean tick() {
         state++;
         if (state > 60 && state < 90) {
@@ -238,14 +263,36 @@ class DisappearingPlatform extends Platform {
 
     @Override
     public String toString() {
-        StringBuilder representation = new StringBuilder();
-        representation.append("3,");
-        representation.append(super.toString());
-        return representation.toString();
+        return "3," + super.toString() + "," + state;
     }
 
     @Override
     public void draw(Graphics g) {
         g.drawImage(imgToDraw, this.getPx(), this.getPy(), this.getWidth(), this.getHeight(), null);
+    }
+}
+
+class MovingPlatform extends Platform {
+
+    private static final int speed = 4;
+
+    public MovingPlatform(int px, int py, int courtWidth, int courtHeight) {
+        super(px, py, courtWidth, courtHeight, 4);
+    }
+
+    public MovingPlatform(int px, int py, int vx, int vy, int courtWidth, int courtHeight) {
+        super(px, py, vx, vy, courtWidth, courtHeight, 4);
+    }
+
+    @Override
+    public void move() {
+
+        if (this.getPx() >= this.getMaxX()) {
+            this.setVx(-speed);
+        } else if (this.getPx() <= 0) {
+            this.setVx(speed);
+        }
+
+        super.move();
     }
 }
