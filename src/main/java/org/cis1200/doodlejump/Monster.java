@@ -64,7 +64,8 @@ public abstract class Monster extends GameObj {
     }
 
     public Monster(
-            int px, int py, int vx, int vy, int courtWidth, int courtHeight, int height, int width, int type, int hp
+            int px, int py, int vx, int vy, int courtWidth, int courtHeight, int height, int width,
+            int type, int hp
     ) {
         super(
                 vx, vy, px, py, width, height, courtWidth, courtHeight,
@@ -150,7 +151,6 @@ class RegularMonster extends Monster {
     }
 }
 
-
 /**
  * This monster will move left to right
  */
@@ -207,7 +207,9 @@ class HomingMonster extends Monster {
         }
     }
 
-    public HomingMonster(int px, int py, int vx, int vy, int courtWidth, int courtHeight, int hp, Player player) {
+    public HomingMonster(
+            int px, int py, int vx, int vy, int courtWidth, int courtHeight, int hp, Player player
+    ) {
         super(px, py, vx, vy, courtWidth, courtHeight, MONSTER_HEIGHT, MONSTER_WIDTH, 2, hp);
 
         if (player != null && !HomingMonster.player.equals(player)) {
@@ -224,7 +226,7 @@ class HomingMonster extends Monster {
         }
         if (this.getPy() >= player.getPy()) {
             this.setVy(-SPEED);
-        } else  {
+        } else {
             this.setVy(SPEED);
         }
 

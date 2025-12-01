@@ -94,7 +94,8 @@ public abstract class Platform extends GameObj {
     }
 
     @Override
-    public void interact(GameObj that) {}
+    public void interact(GameObj that) {
+    }
 
     @Override
     public void draw(Graphics g) {
@@ -132,7 +133,6 @@ class BouncyPlatform extends Platform {
     }
 }
 
-
 class WeakPlatform extends Platform {
     public static final String IMG_FILE = "files/weakPlatform.png";
     public static final String IMG_FILE_BROKEN = "files/weakPlatformBroken.png";
@@ -157,7 +157,9 @@ class WeakPlatform extends Platform {
         this.imgToDraw = img;
     }
 
-    public WeakPlatform(int px, int py, int vx, int vy, int courtWidth, int courtHeight, int state) {
+    public WeakPlatform(
+            int px, int py, int vx, int vy, int courtWidth, int courtHeight, int state
+    ) {
         super(px, py, vx, vy, courtWidth, courtHeight, 0);
         try {
             if (img == null) {
@@ -173,7 +175,7 @@ class WeakPlatform extends Platform {
         if (state == 1) {
             this.imgToDraw = imgBroken;
             this.state = 1;
-        } else  {
+        } else {
             this.imgToDraw = img;
             this.state = 0;
         }
@@ -201,7 +203,9 @@ class WeakPlatform extends Platform {
 
     @Override
     public void draw(Graphics g) {
-        g.drawImage(this.imgToDraw, this.getPx(), this.getPy(), this.getWidth(), this.getHeight(), null);
+        g.drawImage(
+                this.imgToDraw, this.getPx(), this.getPy(), this.getWidth(), this.getHeight(), null
+        );
     }
 
     @Override
@@ -240,7 +244,9 @@ class DisappearingPlatform extends Platform {
         state = -Math.min(((courtHeight - this.getPy()) / 2), rng.next(100));
     }
 
-    public DisappearingPlatform(int px, int py, int vx, int vy, int courtWidth, int courtHeight, int state) {
+    public DisappearingPlatform(
+            int px, int py, int vx, int vy, int courtWidth, int courtHeight, int state
+    ) {
         super(px, py, vx, vy, courtWidth, courtHeight, 0);
 
         try {
@@ -318,6 +324,6 @@ class MovingPlatform extends Platform {
 
     @Override
     public String toString() {
-        return  "4," + super.toString();
+        return "4," + super.toString();
     }
 }

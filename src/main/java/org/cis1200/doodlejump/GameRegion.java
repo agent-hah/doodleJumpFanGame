@@ -50,8 +50,10 @@ public class GameRegion extends JPanel {
 
     public static final String SAVE_FILE = "files/saveFile.txt";
 
-    public GameRegion(JLabel status, JLabel score, JButton resume, JButton pause, JButton reset,
-                      JButton save) {
+    public GameRegion(
+            JLabel status, JLabel score, JButton resume, JButton pause, JButton reset,
+            JButton save
+    ) {
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
         if (img == null) {
@@ -140,7 +142,9 @@ public class GameRegion extends JPanel {
             newPlatform2 = createPlatform(py, 1);
         }
         if (random.next(2) == 1) {
-            newPlatform1 = new MovingPlatform(random.next(COURT_WIDTH - Platform.WIDTH), py, COURT_WIDTH, COURT_HEIGHT);
+            newPlatform1 = new MovingPlatform(
+                    random.next(COURT_WIDTH - Platform.WIDTH), py, COURT_WIDTH, COURT_HEIGHT
+            );
             newPlatform2 = null;
         }
 
@@ -227,8 +231,11 @@ public class GameRegion extends JPanel {
                     );
                     break;
                 case 3:
-                    toAdd = new HomingMonster(random.next(COURT_WIDTH - Monster.MONSTER_WIDTH),
-                            py, COURT_WIDTH, COURT_HEIGHT, player);
+                    toAdd = new HomingMonster(
+                            random.next(COURT_WIDTH - Monster.MONSTER_WIDTH),
+                            py, COURT_WIDTH, COURT_HEIGHT, player
+                    );
+                    break;
                 default:
                     break;
             }
@@ -247,8 +254,10 @@ public class GameRegion extends JPanel {
                     );
                     break;
                 case 3:
-                    new HomingMonster(random.next(COURT_WIDTH - Monster.MONSTER_WIDTH),
-                            py, COURT_WIDTH, COURT_HEIGHT, player);
+                    new HomingMonster(
+                            random.next(COURT_WIDTH - Monster.MONSTER_WIDTH),
+                            py, COURT_WIDTH, COURT_HEIGHT, player
+                    );
                     break;
                 default:
                     break;
@@ -401,7 +410,7 @@ public class GameRegion extends JPanel {
             createMonster();
 
             for (LinkedList<Platform> platformPair : platforms) {
-                for  (Platform platform : platformPair) {
+                for (Platform platform : platformPair) {
                     if (platform.getClass() == MovingPlatform.class) {
                         platform.move();
                     }
@@ -446,7 +455,7 @@ public class GameRegion extends JPanel {
 
             monsters.removeIf(Monster::isDead);
 
-             bullets.removeIf(bullet -> (bullet.isHitTarget() | bullet.isOutOfBounds()));
+            bullets.removeIf(bullet -> (bullet.isHitTarget() | bullet.isOutOfBounds()));
 
             for (LinkedList<Platform> platforms : platforms) {
                 for (Platform platform : platforms) {
@@ -655,8 +664,10 @@ public class GameRegion extends JPanel {
             this.status.setText("Saved Doodle Jump! Ok to Exit Game!");
             this.saveButton.setEnabled(false);
         } catch (IOException e) {
-            this.status.setText("Error while writing file! Please Don't Close the Application and "
-                    + "Just Continue Your Game!");
+            this.status.setText(
+                    "Error while writing file! Please Don't Close the Application and "
+                            + "Just Continue Your Game!"
+            );
             this.saveButton.setEnabled(false);
         }
     }

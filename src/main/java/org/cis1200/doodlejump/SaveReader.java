@@ -1,7 +1,5 @@
 package org.cis1200.doodlejump;
 
-import org.cis1200.Game;
-
 import java.util.LinkedList;
 import java.util.List;
 
@@ -70,7 +68,8 @@ public class SaveReader {
         if (inputs.isEmpty()) {
             throw new IllegalArgumentException("Invalid Size of Inputs");
         }
-        if ((inputs.size() != 5 && inputs.getFirst() != 2) | (inputs.size() != 6 && inputs.getFirst() == 2)
+        if ((inputs.size() != 5 && inputs.getFirst() != 2)
+                | (inputs.size() != 6 && inputs.getFirst() == 2)
                 | (inputs.size() != 6 && inputs.getFirst() == 3)) {
             throw new IllegalArgumentException("Invalid Size of Inputs");
         }
@@ -93,11 +92,21 @@ public class SaveReader {
         }
 
         return switch (type) {
-            case 0 -> new RegularPlatform(px, py, vx, vy, GameRegion.COURT_WIDTH, GameRegion.COURT_HEIGHT);
-            case 1 -> new BouncyPlatform(px, py, vx, vy, GameRegion.COURT_WIDTH, GameRegion.COURT_HEIGHT);
-            case 2 -> new WeakPlatform(px, py, vx, vy, GameRegion.COURT_WIDTH, GameRegion.COURT_HEIGHT, state);
-            case 3 -> new DisappearingPlatform(px, py, vx, vy, GameRegion.COURT_WIDTH, GameRegion.COURT_HEIGHT, state);
-            case 4 -> new MovingPlatform(px, py, vx, vy, GameRegion.COURT_WIDTH, GameRegion.COURT_HEIGHT);
+            case 0 -> new RegularPlatform(
+                    px, py, vx, vy, GameRegion.COURT_WIDTH, GameRegion.COURT_HEIGHT
+            );
+            case 1 -> new BouncyPlatform(
+                    px, py, vx, vy, GameRegion.COURT_WIDTH, GameRegion.COURT_HEIGHT
+            );
+            case 2 -> new WeakPlatform(
+                    px, py, vx, vy, GameRegion.COURT_WIDTH, GameRegion.COURT_HEIGHT, state
+            );
+            case 3 -> new DisappearingPlatform(
+                    px, py, vx, vy, GameRegion.COURT_WIDTH, GameRegion.COURT_HEIGHT, state
+            );
+            case 4 -> new MovingPlatform(
+                    px, py, vx, vy, GameRegion.COURT_WIDTH, GameRegion.COURT_HEIGHT
+            );
             default -> throw new IllegalArgumentException("Invalid Type of Platform");
         };
     }
@@ -120,9 +129,15 @@ public class SaveReader {
         int hp = inputs.removeFirst();
 
         return switch (type) {
-            case 0 -> new RegularMonster(px, py, vx, vy, GameRegion.COURT_WIDTH, GameRegion.COURT_HEIGHT, hp);
-            case 1 -> new MovingMonster(px, py, vx, vy, GameRegion.COURT_WIDTH, GameRegion.COURT_HEIGHT, hp);
-            case 2 -> new HomingMonster(px, py, vx, vy, GameRegion.COURT_WIDTH, GameRegion.COURT_HEIGHT, hp, player);
+            case 0 -> new RegularMonster(
+                    px, py, vx, vy, GameRegion.COURT_WIDTH, GameRegion.COURT_HEIGHT, hp
+            );
+            case 1 -> new MovingMonster(
+                    px, py, vx, vy, GameRegion.COURT_WIDTH, GameRegion.COURT_HEIGHT, hp
+            );
+            case 2 -> new HomingMonster(
+                    px, py, vx, vy, GameRegion.COURT_WIDTH, GameRegion.COURT_HEIGHT, hp, player
+            );
             default -> throw new IllegalArgumentException("Invalid Type of Monster");
         };
     }

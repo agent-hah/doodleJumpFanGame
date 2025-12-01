@@ -1,7 +1,6 @@
 package org.cis1200.doodlejump;
 
 import org.junit.jupiter.api.*;
-import java.awt.*;
 import java.util.Arrays;
 import java.util.LinkedList;
 
