@@ -52,14 +52,27 @@ public class Bullet extends GameObj {
         }
     }
 
+    private void checkBounds() {
+        if (this.getPy() <= -20 | this.getPy() >= this.getMaxY() + 5) {
+            this.outOfBounds = true;
+        } else this.outOfBounds = this.getPx() <= -20 | this.getPx() >= this.getMaxY() + 5;
+    }
+
+
+
     public void setPx(int px) {
         super.setPx(px, false);
+        checkBounds();
     }
 
     @Override
-    public void setPx(int px, boolean wantClipping) {
-        this.setPx(px);
+    public void setPy(int py) {
+        super.setPy(py);
+        checkBounds();
     }
+
+    @Override
+    public void setPx(int px, boolean wantClipping) { this.setPx(px); }
 
     public boolean isHitTarget() {
         return this.hitTarget;
@@ -74,11 +87,7 @@ public class Bullet extends GameObj {
         this.setPx(this.getPx() + this.getVx());
         this.setPy(this.getPy() + this.getVy());
 
-        if (this.getPy() <= -20 | this.getPy() >= this.getMaxY() + 5) {
-            this.outOfBounds = true;
-        } else if (this.getPx() <= -20 | this.getPx() >= this.getMaxY() + 5) {
-            this.outOfBounds = true;
-        }
+        checkBounds();
     }
 
     @Override
@@ -93,19 +102,5 @@ public class Bullet extends GameObj {
     @Override
     public void draw(Graphics g) {
         g.drawImage(img, this.getPx(), this.getPy(), SIZE, SIZE, null);
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder representation = new StringBuilder();
-        representation.append(this.getPx());
-        representation.append(",");
-        representation.append(this.getPy());
-        representation.append(",");
-        representation.append(this.getVx());
-        representation.append(",");
-        representation.append(this.getVy());
-
-        return representation.toString();
     }
 }

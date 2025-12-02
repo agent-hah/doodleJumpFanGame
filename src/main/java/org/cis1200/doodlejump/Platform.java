@@ -87,6 +87,38 @@ public abstract class Platform extends GameObj {
     public void setPx(int px) {
         super.setPx(px, true);
     }
+    @Override
+    public boolean intersects(GameObj that) {
+        if (that instanceof Player) {
+            int pad = Math.min(Math.max(this.getVy(), 5), 30);
+            return (that.getVy() >= 0
+                    && this.getPy() + this.getHeight() >= that.getPy() + that.getHeight() - pad
+                    && that.getPx() + that.getWidth() >= this.getPx()
+                    && that.getPy() + that.getHeight() >= this.getPy()
+                    && this.getPx() + this.getWidth() >= that.getPx());
+        } else {
+            return super.intersects(that);
+        }
+    }
+
+    @Override
+    public boolean willIntersect(GameObj that) {
+        if (that instanceof Player) {
+            int pad = Math.min(Math.max(this.getVy(), 5), 30);
+            int thatNextX = that.getPx() + that.getVx();
+            int thatNextY = that.getPy() + that.getVy();
+            int thisNextVy = this.getVy() + this.getAy();
+            int thisNextX = this.getPx() + this.getVx();
+            int thisNextY = this.getPy() + this.getVy();
+            return (thisNextVy >= 0
+                    && thisNextY + this.getHeight() >= thatNextY + that.getHeight() - pad
+                    && thatNextX + that.getWidth() >= thisNextX
+                    && thatNextY + that.getHeight() >= thisNextY
+                    && thisNextX + this.getWidth() >= thatNextX);
+        } else {
+            return super.willIntersect(that);
+        }
+    }
 
     @Override
     public void setPx(int px, boolean wantClipping) {
