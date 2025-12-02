@@ -35,8 +35,7 @@ public class Player extends GameObj {
                 imgL = ImageIO.read(new File(IMG_FILE_L));
             }
         } catch (IOException e) {
-            System.err.println("Error loading image");
-            // TODO: create a page that will be pushed toward the game
+            e.printStackTrace();
         }
     }
 
@@ -53,7 +52,7 @@ public class Player extends GameObj {
                 imgL = ImageIO.read((new File(IMG_FILE_L)));
             }
         } catch (IOException e) {
-            System.err.println("Error loading image");
+            e.printStackTrace();
         }
     }
 
