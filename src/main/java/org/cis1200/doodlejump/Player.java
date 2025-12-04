@@ -15,7 +15,6 @@ public class Player extends GameObj {
     public static final int INIT_VEL_X = 0;
     public static final int INIT_VEL_Y = -25;
     public static final int INIT_ACCEL_Y = 2;
-    public static final int INIT_ACCEL_X = 0;
     public static final int INIT_HP = 1;
     public static final int AFFECTVY = 0;
 
@@ -25,7 +24,7 @@ public class Player extends GameObj {
     public Player(int courtWidth, int courtHeight) {
         super(
                 INIT_VEL_X, INIT_VEL_Y, INIT_POS_X, INIT_POS_Y, SIZE, SIZE, courtWidth, courtHeight,
-                INIT_ACCEL_X, INIT_ACCEL_Y, INIT_HP, AFFECTVY
+                INIT_ACCEL_Y, INIT_HP, AFFECTVY
         );
         try {
             if (imgR == null) {
@@ -42,7 +41,7 @@ public class Player extends GameObj {
     public Player(int px, int py, int vx, int vy, int courtWidth, int courtHeight) {
         super(
                 vx, vy, px, py, SIZE, SIZE, courtWidth, courtHeight,
-                INIT_ACCEL_X, INIT_ACCEL_Y, INIT_HP, AFFECTVY
+                INIT_ACCEL_Y, INIT_HP, AFFECTVY
         );
         try {
             if (imgR == null) {

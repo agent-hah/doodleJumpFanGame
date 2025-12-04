@@ -432,9 +432,7 @@ public class GameRegion extends JPanel {
 
             for (LinkedList<Platform> platformPair : platforms) {
                 for (Platform platform : platformPair) {
-                    if (platform.getClass() == MovingPlatform.class) {
-                        platform.move();
-                    }
+                    platform.move();
                 }
             }
 
@@ -481,9 +479,7 @@ public class GameRegion extends JPanel {
             for (LinkedList<Platform> platforms : platforms) {
                 for (Platform platform : platforms) {
                     player.interact(platform);
-                    if (platform.getClass() == WeakPlatform.class) {
-                        platform.interact(player);
-                    }
+                    platform.interact(player);
                 }
             }
 

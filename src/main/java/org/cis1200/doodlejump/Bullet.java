@@ -29,7 +29,7 @@ public class Bullet extends GameObj {
      *
      */
     public Bullet(int px, int py, int courtWidth, int courtHeight) {
-        super(0, SPEED, px, py, SIZE, SIZE, courtWidth, courtHeight, ACCEL, ACCEL, HP, AFFECTVY);
+        super(0, SPEED, px, py, SIZE, SIZE, courtWidth, courtHeight, ACCEL, HP, AFFECTVY);
 
         if (img == null) {
             try {
@@ -41,7 +41,7 @@ public class Bullet extends GameObj {
     }
 
     public Bullet(int px, int py, int vx, int vy, int courtWidth, int courtHeight) {
-        super(vx, vy, px, py, SIZE, SIZE, courtWidth, courtHeight, ACCEL, ACCEL, HP, AFFECTVY);
+        super(vx, vy, px, py, SIZE, SIZE, courtWidth, courtHeight, ACCEL, HP, AFFECTVY);
 
         if (img == null) {
             try {
