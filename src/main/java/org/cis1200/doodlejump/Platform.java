@@ -95,7 +95,7 @@ public abstract class Platform extends GameObj {
             return (that.getVy() >= 0
                     && this.getPy() + this.getHeight() >= that.getPy() + that.getHeight() - pad
                     && that.getPx() + that.getWidth() >= this.getPx()
-                    && that.getPy() + that.getHeight() >= this.getPy()
+                    && that.getPy() + that.getHeight() >= this.getPy() - pad
                     && this.getPx() + this.getWidth() >= that.getPx());
         } else {
             return super.intersects(that);

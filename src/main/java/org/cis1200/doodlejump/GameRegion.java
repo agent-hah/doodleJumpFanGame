@@ -34,7 +34,7 @@ public class GameRegion extends JPanel {
 
     private final JButton saveButton;
 
-    private final JButton instructions_button;
+    private final JButton instructionsButton;
 
     private int score = 0;
 
@@ -54,7 +54,7 @@ public class GameRegion extends JPanel {
 
     public GameRegion(
             JLabel status, JLabel score, JButton resume, JButton pause, JButton reset,
-            JButton save, JButton instructions_button
+            JButton save, JButton instructionsButton
     ) {
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
@@ -106,7 +106,7 @@ public class GameRegion extends JPanel {
         this.pauseButton = pause;
         this.resetButton = reset;
         this.saveButton = save;
-        this.instructions_button = instructions_button;
+        this.instructionsButton = instructionsButton;
     }
 
     private Platform createPlatform(int py, int choice) {
@@ -283,7 +283,7 @@ public class GameRegion extends JPanel {
         this.resumeButton.setVisible(false);
         this.resetButton.setVisible(false);
         this.saveButton.setVisible(false);
-        this.instructions_button.setVisible(false);
+        this.instructionsButton.setVisible(false);
         requestFocusInWindow();
 
         player = new Player(COURT_WIDTH, COURT_HEIGHT);
@@ -316,7 +316,7 @@ public class GameRegion extends JPanel {
         this.resumeButton.setVisible(true);
         this.resetButton.setVisible(false);
         this.saveButton.setVisible(false);
-        this.instructions_button.setVisible(true);
+        this.instructionsButton.setVisible(true);
         this.resumeButton.setText(buttonLabel);
     }
 
@@ -489,7 +489,7 @@ public class GameRegion extends JPanel {
                 playing = false;
                 this.status.setText("Game Over!");
                 this.resetButton.setVisible(true);
-                this.instructions_button.setVisible(true);
+                this.instructionsButton.setVisible(true);
                 this.pauseButton.setVisible(false);
                 this.resumeButton.setVisible(false);
                 this.saveButton.setVisible(false);
@@ -571,7 +571,7 @@ public class GameRegion extends JPanel {
             keepGoing = true;
         }
 
-        if (bullets.peekFirst() != null && bullets.peekLast().getPy() <= 0) {
+        if (bullets.peekLast() != null && bullets.peekLast().getPy() <= 0) {
             bullets.removeFirst();
             keepGoing = true;
         }
@@ -598,8 +598,8 @@ public class GameRegion extends JPanel {
             keepGoing = true;
         }
 
-        if (bullets.peekLast() != null && bullets.peekLast().getPy() > COURT_HEIGHT) {
-            bullets.removeLast();
+        if (bullets.peekFirst() != null && bullets.peekFirst().getPy() > COURT_HEIGHT) {
+            bullets.removeFirst();
             keepGoing = true;
         }
 
@@ -612,7 +612,7 @@ public class GameRegion extends JPanel {
         this.resumeButton.setVisible(true);
         this.resetButton.setVisible(true);
         this.saveButton.setVisible(true);
-        this.instructions_button.setVisible(true);
+        this.instructionsButton.setVisible(true);
         this.status.setText("Paused");
 
     }
@@ -626,7 +626,7 @@ public class GameRegion extends JPanel {
         this.resetButton.setVisible(false);
         this.saveButton.setVisible(false);
         this.saveButton.setEnabled(true);
-        this.instructions_button.setVisible(false);
+        this.instructionsButton.setVisible(false);
         if (!this.resumeButton.getText().equals("Resume")) {
             this.resumeButton.setText("Resume");
         }

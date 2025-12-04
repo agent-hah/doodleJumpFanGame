@@ -7,7 +7,8 @@ public class RunDoodleJump implements Runnable {
 
     @Override
     public void run() {
-        // Instructions panel ====================================================================
+        // Instructions panel
+        // ====================================================================
         final JFrame instructions = new JFrame("Instructions");
         instructions.setLocation(0, 0);
         instructions.add(new Instructions());
@@ -16,11 +17,10 @@ public class RunDoodleJump implements Runnable {
         instructions.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         instructions.setVisible(true);
 
-        final JButton instructions_button = new JButton("Instructions");
-        instructions_button.addActionListener(e -> {
+        final JButton instructionsButton = new JButton("Instructions");
+        instructionsButton.addActionListener(e -> {
             instructions.setVisible(true);
         });
-
 
         final JFrame frame = new JFrame("Doodle Jump!");
         frame.setLocation(1000, 1000);
@@ -41,7 +41,10 @@ public class RunDoodleJump implements Runnable {
         final JButton save = new JButton("Save");
 
         // Main playing area
-        final GameRegion court = new GameRegion(status, scoreLabel, resume, pause, reset, save, instructions_button);
+        final GameRegion court = new GameRegion(
+                status, scoreLabel, resume, pause, reset, save,
+                instructionsButton
+        );
         frame.add(court, BorderLayout.CENTER);
 
         resume.addActionListener(e -> {
@@ -68,7 +71,7 @@ public class RunDoodleJump implements Runnable {
         control_panel.add(resume);
         control_panel.add(reset);
         control_panel.add(save);
-        control_panel.add(instructions_button);
+        control_panel.add(instructionsButton);
 
         // Put the frame on the screen
         frame.pack();

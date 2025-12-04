@@ -212,4 +212,14 @@ public class DoodleTest {
         player.interact(platform5);
         assertEquals(-25, player.getVy());
     }
+
+    @Test
+    public void testCollisionPlatformAndPlayerPreventsTunnel() {
+        Player player = new Player(20, 20, 0, 400, 30000, 30000);
+        Platform platform = new RegularPlatform(20, 80, 30000, 30000);
+        assertTrue(player.intersects(platform));
+        player.move();
+        // Just to show that it would've been enough speed to tunnel
+        assertFalse(player.intersects(platform));
+    }
 }

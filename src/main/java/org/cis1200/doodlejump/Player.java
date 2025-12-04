@@ -69,7 +69,7 @@ public class Player extends GameObj {
             return (this.getVy() >= 0
                     && that.getPy() + that.getHeight() >= this.getPy() + this.getHeight() - pad
                     && this.getPx() + this.getWidth() >= that.getPx()
-                    && this.getPy() + this.getHeight() >= that.getPy()
+                    && this.getPy() + this.getHeight() >= that.getPy() - pad
                     && that.getPx() + that.getWidth() >= this.getPx());
         } else {
             return super.intersects(that);
