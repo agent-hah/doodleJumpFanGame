@@ -15,7 +15,6 @@ public abstract class Monster extends GameObj {
     public static final int INIT_VEL_X = 0;
     public static final int INIT_VEL_Y = 0;
     public static final int INIT_ACCEL_Y = 0;
-    public static final int INIT_ACCEL_X = 0;
     public static final int INIT_HP = 1;
     public static final int AFFECTVY = 0;
 
@@ -35,7 +34,7 @@ public abstract class Monster extends GameObj {
     ) {
         super(
                 INIT_VEL_X, INIT_VEL_Y, px, py, width, height, courtWidth, courtHeight,
-                INIT_ACCEL_X, INIT_ACCEL_Y, INIT_HP, AFFECTVY
+                INIT_ACCEL_Y, INIT_HP, AFFECTVY
         );
         try {
             if (img1 == null) {
@@ -69,7 +68,7 @@ public abstract class Monster extends GameObj {
     ) {
         super(
                 vx, vy, px, py, width, height, courtWidth, courtHeight,
-                INIT_ACCEL_X, INIT_ACCEL_Y, hp, AFFECTVY
+                INIT_ACCEL_Y, hp, AFFECTVY
         );
         try {
             if (img1 == null) {

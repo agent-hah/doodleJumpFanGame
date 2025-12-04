@@ -15,7 +15,6 @@ public abstract class Platform extends GameObj {
     public static final int HEIGHT = 20;
     public static final int INIT_VEL_X = 0;
     public static final int INIT_VEL_Y = 0;
-    public static final int INIT_ACCEL_X = 0;
     public static final int INIT_ACCEL_Y = 0;
     public static final int HP = 1;
     public static final int AFFECTVY = -25;
@@ -30,7 +29,7 @@ public abstract class Platform extends GameObj {
     public Platform(int px, int py, int courtWidth, int courtHeight, int type) {
         super(
                 INIT_VEL_X, INIT_VEL_Y, px, py, WIDTH, HEIGHT, courtWidth, courtHeight,
-                INIT_ACCEL_X, INIT_ACCEL_Y, HP, AFFECTVY
+                INIT_ACCEL_Y, HP, AFFECTVY
         );
         try {
             if (img == null) {
@@ -60,7 +59,7 @@ public abstract class Platform extends GameObj {
     public Platform(int px, int py, int vx, int vy, int courtWidth, int courtHeight, int type) {
         super(
                 vx, vy, px, py, WIDTH, HEIGHT, courtWidth, courtHeight,
-                INIT_ACCEL_X, INIT_ACCEL_Y, HP, AFFECTVY
+                INIT_ACCEL_Y, HP, AFFECTVY
         );
         try {
             if (img == null) {

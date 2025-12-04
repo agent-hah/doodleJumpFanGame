@@ -191,8 +191,10 @@ public class GameRegion extends JPanel {
     }
 
     private void createMonster() {
-        if (monsters.size() >= 2) {
-            return;
+        int multiplier = monsters.isEmpty() ? 1 : monsters.size();
+
+        if (monsters.size() > 5) {
+            multiplier *= 16 << monsters.size() << monsters.size();
         }
 
         Monster toAdd = null;
@@ -203,7 +205,7 @@ public class GameRegion extends JPanel {
             py = monsters.peekFirst().getPy() - 5 - Monster.MONSTER_HEIGHT;
         }
         if (score < 200) {
-            switch (random.next(20)) {
+            switch (random.next(20 * multiplier)) {
                 case 1:
                     toAdd = new RegularMonster(
                             random.next(COURT_WIDTH - Monster.MONSTER_WIDTH),
@@ -220,7 +222,7 @@ public class GameRegion extends JPanel {
                     break;
             }
         } else if (score < 1000) {
-            switch (random.next(10)) {
+            switch (random.next(10 * multiplier)) {
                 case 1:
                     toAdd = new RegularMonster(
                             random.next(COURT_WIDTH - Monster.MONSTER_WIDTH),
@@ -243,7 +245,7 @@ public class GameRegion extends JPanel {
                     break;
             }
         } else {
-            switch (random.next(5)) {
+            switch (random.next(5  * multiplier)) {
                 case 1:
                     toAdd = new RegularMonster(
                             random.next(COURT_WIDTH - Monster.MONSTER_WIDTH),

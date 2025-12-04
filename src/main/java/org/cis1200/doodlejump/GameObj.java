@@ -19,7 +19,6 @@ public abstract class GameObj {
     private int vx;
     private int vy;
 
-    private int ax;
     private int ay;
 
     private int hp;
@@ -32,7 +31,7 @@ public abstract class GameObj {
     /** Constructor for the object */
     public GameObj(
             int vx, int vy, int px, int py, int width, int height, int courtWidth, int courtHeight,
-            int ax, int ay, int hp, int affectVy
+            int ay, int hp, int affectVy
     ) {
         this.vx = vx;
         this.vy = vy;
@@ -42,7 +41,6 @@ public abstract class GameObj {
         this.height = height;
         this.maxX = courtWidth - width;
         this.maxY = courtHeight - height;
-        this.ax = ax;
         this.ay = ay;
         this.hp = hp;
         this.affectVy = affectVy;
@@ -117,10 +115,6 @@ public abstract class GameObj {
         this.affectVy = affectVy;
     }
 
-    public void setAx(int ax) {
-        this.ax = ax;
-    }
-
     public void setAy(int ay) {
         this.ay = ay;
     }
@@ -137,7 +131,6 @@ public abstract class GameObj {
 
     /** accelerates the object */
     private void accel() {
-        this.vx += this.ax;
         this.vy += this.ay;
     }
 

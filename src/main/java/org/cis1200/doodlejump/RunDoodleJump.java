@@ -15,7 +15,6 @@ public class RunDoodleJump implements Runnable {
 
         instructions.pack();
         instructions.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-        instructions.setVisible(true);
 
         final JButton instructionsButton = new JButton("Instructions");
         instructionsButton.addActionListener(e -> {
@@ -77,6 +76,8 @@ public class RunDoodleJump implements Runnable {
         frame.pack();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
+
+        instructions.setVisible(true);
 
         // Start game
         if (court.load()) {

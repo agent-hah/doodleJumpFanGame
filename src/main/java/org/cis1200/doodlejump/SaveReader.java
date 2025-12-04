@@ -1,22 +1,18 @@
 package org.cis1200.doodlejump;
 
 import java.util.LinkedList;
-import java.util.List;
 
 public class SaveReader {
 
     private final static char COMMA = ',';
 
     public static LinkedList<Integer> parse(String line) {
-        LinkedList<Integer> integerList = new LinkedList<Integer>();
+        LinkedList<Integer> integerList = new LinkedList<>();
 
         if (line == null) {
             throw new IllegalArgumentException();
         }
-
-        boolean insideQuotes = false;
         char[] chars = line.toCharArray();
-        List<String> result = new LinkedList<>();
         StringBuilder acc = new StringBuilder();
 
         if (chars.length == 0) {
