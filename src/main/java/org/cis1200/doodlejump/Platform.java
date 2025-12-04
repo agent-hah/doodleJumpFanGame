@@ -87,6 +87,7 @@ public abstract class Platform extends GameObj {
     public void setPx(int px) {
         super.setPx(px, true);
     }
+
     @Override
     public boolean intersects(GameObj that) {
         if (that instanceof Player) {
@@ -295,16 +296,16 @@ class DisappearingPlatform extends Platform {
 
     public boolean tick() {
         state++;
-        if (state > 60 && state < 90) {
+        if (state > 100 && state < 200) {
             imgToDraw = img2;
-        } else if (state > 100) {
+        } else if (state > 300) {
             imgToDraw = img3;
         }
         return shouldDelete();
     }
 
     public boolean shouldDelete() {
-        return state > 115;
+        return state > 400;
     }
 
     @Override

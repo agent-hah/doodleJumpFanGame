@@ -212,7 +212,7 @@ class HomingMonster extends Monster {
     ) {
         super(px, py, vx, vy, courtWidth, courtHeight, MONSTER_HEIGHT, MONSTER_WIDTH, 2, hp);
 
-        if (player != null && !HomingMonster.player.equals(player)) {
+        if (player != null && !player.equals(HomingMonster.player)) {
             HomingMonster.player = player;
         }
     }

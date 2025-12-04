@@ -55,10 +55,10 @@ public class Bullet extends GameObj {
     private void checkBounds() {
         if (this.getPy() <= -20 | this.getPy() >= this.getMaxY() + 5) {
             this.outOfBounds = true;
-        } else this.outOfBounds = this.getPx() <= -20 | this.getPx() >= this.getMaxY() + 5;
+        } else {
+            this.outOfBounds = this.getPx() <= -20 | this.getPx() >= this.getMaxY() + 5;
+        }
     }
-
-
 
     public void setPx(int px) {
         super.setPx(px, false);
@@ -72,7 +72,9 @@ public class Bullet extends GameObj {
     }
 
     @Override
-    public void setPx(int px, boolean wantClipping) { this.setPx(px); }
+    public void setPx(int px, boolean wantClipping) {
+        this.setPx(px);
+    }
 
     public boolean isHitTarget() {
         return this.hitTarget;

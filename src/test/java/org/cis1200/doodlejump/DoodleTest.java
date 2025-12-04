@@ -97,7 +97,8 @@ public class DoodleTest {
         assertTrue(monster.intersects(platform));
     }
 
-    //For the monster, the collision should happen even if the platform is above the monster's feet.
+    // For the monster, the collision should happen even if the platform is above
+    // the monster's feet.
     @Test
     public void testCollisionBetweenPlatformAndMonsterHigh() {
         Monster monster = new RegularMonster(20, 20, 30000, 30000);
@@ -116,7 +117,8 @@ public class DoodleTest {
         assertTrue(bullet.intersects(platform));
     }
 
-    //For the bullet, the collision should happen even if the platform is above the bullet's halfway
+    // For the bullet, the collision should happen even if the platform is above the
+    // bullet's halfway
     // point
     @Test
     public void testCollisionBetweenPlatformAndBulletHigh() {
