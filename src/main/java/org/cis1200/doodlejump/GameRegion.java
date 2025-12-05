@@ -245,7 +245,7 @@ public class GameRegion extends JPanel {
                     break;
             }
         } else {
-            switch (random.next(5  * multiplier)) {
+            switch (random.next(5 * multiplier)) {
                 case 1:
                     toAdd = new RegularMonster(
                             random.next(COURT_WIDTH - Monster.MONSTER_WIDTH),
@@ -567,7 +567,7 @@ public class GameRegion extends JPanel {
             keepGoing = true;
         }
 
-        if (monsters.peekFirst() != null && monsters.peekLast().getPy() <= 0) {
+        if (monsters.peekFirst() != null && monsters.peekFirst().getPy() <= 0) {
             monsters.removeFirst();
             keepGoing = true;
         }

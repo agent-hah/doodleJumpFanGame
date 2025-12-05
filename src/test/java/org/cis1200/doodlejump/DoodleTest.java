@@ -4,14 +4,12 @@ import org.junit.jupiter.api.*;
 
 import javax.swing.*;
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 
 import static org.junit.jupiter.api.Assertions.*;
-
 
 public class DoodleTest {
 
@@ -80,7 +78,8 @@ public class DoodleTest {
             bw.close();
         } catch (IOException e) {
             fail(e.getMessage());
-        } court.reset();
+        }
+        court.reset();
         try {
             bw = new BufferedReader(new FileReader(saveFile));
             assertEquals("empty", bw.readLine());
@@ -284,7 +283,9 @@ public class DoodleTest {
 
         platform.interact(player);
 
-        assertEquals("1", String.valueOf((platform.toString().charAt(platform.toString().length() - 1))));
+        assertEquals(
+                "1", String.valueOf((platform.toString().charAt(platform.toString().length() - 1)))
+        );
     }
 
     @Test
