@@ -160,25 +160,6 @@ public abstract class GameObj {
     }
 
     /**
-     * checks if the object will return one timestep later
-     * 
-     * @param that The other object
-     * @return Whether an intersection will occur
-     *
-     */
-    public boolean willIntersect(GameObj that) {
-        int thisNextX = this.px + this.vx;
-        int thisNextY = this.py + this.vy;
-        int thatNextX = that.px + that.vx;
-        int thatNextY = that.py + that.vy;
-
-        return (thisNextX + this.width >= thatNextX
-                && thisNextY + this.height >= thatNextY
-                && thatNextX + that.width >= thisNextX
-                && thatNextY + that.height >= thisNextY);
-    }
-
-    /**
      * An interaction with the other object, whatever that will be
      * 
      * @param that the other object

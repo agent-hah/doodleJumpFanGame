@@ -64,7 +64,7 @@ public class Player extends GameObj {
     @Override
     public boolean intersects(GameObj that) {
         if (that instanceof Platform) {
-            int pad = Math.min(Math.max(this.getVy(), 5), 30);
+            int pad = Math.min(Math.max(this.getVy(), 5), 20);
             return (this.getVy() >= 0
                     && that.getPy() + that.getHeight() >= this.getPy() + this.getHeight() - pad
                     && this.getPx() + this.getWidth() >= that.getPx()
@@ -76,32 +76,11 @@ public class Player extends GameObj {
     }
 
     @Override
-    public boolean willIntersect(GameObj that) {
-        if (that instanceof Platform) {
-            int pad = Math.min(Math.max(this.getVy(), 5), 30);
-            int thisNextVy = this.getVy() + this.getAy();
-            int thisNextX = this.getPx() + this.getVx();
-            int thisNextY = this.getPy() + this.getVy();
-            int thatNextX = that.getPx() + that.getVx();
-            int thatNextY = that.getPy() + that.getVy();
-            return (thisNextVy >= 0
-                    && thatNextY + that.getHeight() >= thisNextY + this.getHeight() - pad
-                    && thisNextX + this.getWidth() >= thatNextX
-                    && thisNextY + this.getHeight() >= thatNextY
-                    && thatNextX + that.getWidth() >= thisNextX);
-        } else {
-            return super.willIntersect(that);
-        }
-    }
-
-    @Override
     public void interact(GameObj that) {
-        if (that instanceof Platform && that.getClass() != WeakPlatform.class) {
-            if (this.willIntersect(that) | this.intersects(that)) {
+        if (this.intersects(that)) {
+            if (that instanceof Platform && that.getClass() != WeakPlatform.class) {
                 this.setVy(that.getAffectVy());
-            }
-        } else if (that instanceof Monster) {
-            if (this.intersects(that)) {
+            } else if (that instanceof Monster) {
                 this.setHp(0);
             }
         }

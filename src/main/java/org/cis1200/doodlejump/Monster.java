@@ -107,7 +107,7 @@ public abstract class Monster extends GameObj {
 
     @Override
     public void interact(GameObj that) {
-        if (this.willIntersect(that) | this.intersects(that)) {
+        if (this.intersects(that)) {
             if (that.getClass() == Bullet.class) {
                 this.setHp(this.getHp() - 1);
                 if (this.getHp() <= 0) {

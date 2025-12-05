@@ -94,7 +94,7 @@ public class Bullet extends GameObj {
 
     @Override
     public void interact(GameObj that) {
-        if (willIntersect(that) | intersects(that)) {
+        if (intersects(that)) {
             if (that instanceof Monster) {
                 this.hitTarget = true;
             }

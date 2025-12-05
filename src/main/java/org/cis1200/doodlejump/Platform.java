@@ -93,7 +93,7 @@ public abstract class Platform extends GameObj {
     @Override
     public boolean intersects(GameObj that) {
         if (that instanceof Player) {
-            int pad = Math.min(Math.max(that.getVy(), 5), 30);
+            int pad = Math.min(Math.max(that.getVy(), 5), 20);
             return (that.getVy() >= 0
                     && this.getPy() + this.getHeight() >= that.getPy() + that.getHeight() - pad
                     && that.getPx() + that.getWidth() >= this.getPx()
@@ -101,25 +101,6 @@ public abstract class Platform extends GameObj {
                     && this.getPx() + this.getWidth() >= that.getPx());
         } else {
             return super.intersects(that);
-        }
-    }
-
-    @Override
-    public boolean willIntersect(GameObj that) {
-        if (that instanceof Player) {
-            int pad = Math.min(Math.max(that.getVy(), 5), 30);
-            int thatNextX = that.getPx() + that.getVx();
-            int thatNextY = that.getPy() + that.getVy();
-            int thisNextVy = this.getVy() + this.getAy();
-            int thisNextX = this.getPx() + this.getVx();
-            int thisNextY = this.getPy() + this.getVy();
-            return (thisNextVy >= 0
-                    && thisNextY + this.getHeight() >= thatNextY + that.getHeight() - pad
-                    && thatNextX + that.getWidth() >= thisNextX
-                    && thatNextY + that.getHeight() >= thisNextY
-                    && thisNextX + this.getWidth() >= thatNextX);
-        } else {
-            return super.willIntersect(that);
         }
     }
 
@@ -218,17 +199,12 @@ class WeakPlatform extends Platform {
 
     @Override
     public void interact(GameObj that) {
-        if (this.willIntersect(that)) {
+        if (this.intersects(that)) {
             if (that.getClass() == Player.class) {
                 this.imgToDraw = imgBroken;
                 this.state = 1;
             }
         }
-    }
-
-    @Override
-    public boolean willIntersect(GameObj that) {
-        return super.willIntersect(that) && that.getVy() >= 0;
     }
 
     @Override
@@ -251,7 +227,7 @@ class WeakPlatform extends Platform {
 
 class DisappearingPlatform extends Platform {
 
-    private static final int TICK_STEP = 40;
+    private static final int TICK_STEP = 32;
     public static final String IMG_FILE_1 = "files/disappearingPlatformTick1.png";
     public static final String IMG_FILE_2 = "files/disappearingPlatformTick2.png";
     public static final String IMG_FILE_3 = "files/disappearingPlatformTick3.png";
