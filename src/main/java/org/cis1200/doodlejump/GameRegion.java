@@ -10,6 +10,7 @@ import java.io.*;
 import java.util.*;
 import java.util.List;
 
+/** The game region (the internal model) */
 public class GameRegion extends JPanel {
 
     // The state of the game
@@ -52,6 +53,22 @@ public class GameRegion extends JPanel {
 
     public static final String SAVE_FILE = "src/main/java/org/cis1200/doodlejump/saveFile.txt";
 
+    /**
+     * Constructor for creating the game region
+     * 
+     * @param status             the status JLabel that will be updated to the state
+     *                           of the game
+     * @param score              the score JLabel that will be updated as the player
+     *                           goes up
+     * @param resume             the JButton that will allow the player to continue
+     *                           playing
+     * @param pause              the JButton that will temporarily stop the game
+     * @param reset              the JButton that will have restart the game from an
+     *                           initial position
+     * @param save               the JButton that will save the internal state of
+     *                           the game to a text file
+     * @param instructionsButton the JButton that will release the instructions
+     */
     public GameRegion(
             JLabel status, JLabel score, JButton resume, JButton pause, JButton reset,
             JButton save, JButton instructionsButton
@@ -62,7 +79,10 @@ public class GameRegion extends JPanel {
             try {
                 img = ImageIO.read(new File(IMG_FILE));
             } catch (IOException e) {
-                e.printStackTrace();
+                img = new BufferedImage(
+                        img.getWidth(), img.getHeight(),
+                        BufferedImage.TYPE_INT_RGB
+                );
             }
         }
 
@@ -71,6 +91,9 @@ public class GameRegion extends JPanel {
 
         setFocusable(true);
 
+        /*
+         * Key listener so that the velocity of the player will be updated
+         */
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -109,8 +132,15 @@ public class GameRegion extends JPanel {
         this.instructionsButton = instructionsButton;
     }
 
+    /**
+     * Modular method for creating one platform
+     * 
+     * @param py     the initial y position that the platform will be created with
+     * @param choice the type that is chosen
+     * @return the newly created platform object
+     */
     private Platform createPlatform(int py, int choice) {
-        RandomNumberGenerator random = new RandomNumberGenerator();
+        RandomGenerator random = new RandomGenerator();
 
         return switch (choice) {
             case 1 -> new BouncyPlatform(
@@ -130,10 +160,17 @@ public class GameRegion extends JPanel {
         };
     }
 
+    /**
+     * Modular method for creating a LinkedList that will be inserted into the
+     * larger LinkedList
+     * 
+     * @param py the initial y position that the platforms will be created with
+     * @return the LinkedList object
+     */
     private LinkedList<Platform> getPlatformPair(int py) {
         Platform newPlatform1;
         Platform newPlatform2;
-        RandomNumberGenerator random = new RandomNumberGenerator();
+        RandomGenerator random = new RandomGenerator();
 
         if (score < 1000) {
             newPlatform1 = createPlatform(py, random.next(3));
@@ -173,6 +210,11 @@ public class GameRegion extends JPanel {
         }
     }
 
+    /**
+     * Modular method for creating all the initial platforms when the game is reset
+     * 
+     * @return the total initial platform data structure
+     */
     private LinkedList<LinkedList<Platform>> createInitialPlatforms() {
         LinkedList<LinkedList<Platform>> res = new LinkedList<>();
 
@@ -182,7 +224,10 @@ public class GameRegion extends JPanel {
             res.add(getPlatformPair(py));
         }
 
-        Platform initialPlatform = new RegularPlatform(350, 740, Platform.WIDTH, Platform.HEIGHT);
+        Platform initialPlatform = new RegularPlatform(
+                350, 740, Platform.WIDTH,
+                Platform.HEIGHT
+        );
         LinkedList<Platform> toAdd = new LinkedList<>();
         toAdd.add(initialPlatform);
         res.add(toAdd);
@@ -190,6 +235,9 @@ public class GameRegion extends JPanel {
         return res;
     }
 
+    /**
+     * Modular method for creating a monster
+     */
     private void createMonster() {
         int multiplier = monsters.isEmpty() ? 1 : monsters.size();
 
@@ -199,22 +247,19 @@ public class GameRegion extends JPanel {
 
         Monster toAdd = null;
 
-        RandomNumberGenerator random = new RandomNumberGenerator();
-        int py = -40 - Monster.MONSTER_HEIGHT;
-        if (monsters.peekFirst() != null && monsters.peekFirst().getPy() <= -30) {
-            py = monsters.peekFirst().getPy() - 5 - Monster.MONSTER_HEIGHT;
-        }
+        RandomGenerator random = new RandomGenerator();
+        int py = -60;
         if (score < 200) {
             switch (random.next(20 * multiplier)) {
                 case 1:
                     toAdd = new RegularMonster(
-                            random.next(COURT_WIDTH - Monster.MONSTER_WIDTH),
+                            random.next(COURT_WIDTH - RegularMonster.WIDTH),
                             py, COURT_WIDTH, COURT_HEIGHT
                     );
                     break;
                 case 2:
                     toAdd = new MovingMonster(
-                            random.next(COURT_WIDTH - Monster.MONSTER_WIDTH),
+                            random.next(COURT_WIDTH - MovingMonster.WIDTH),
                             py, COURT_WIDTH, COURT_HEIGHT
                     );
                     break;
@@ -225,19 +270,19 @@ public class GameRegion extends JPanel {
             switch (random.next(10 * multiplier)) {
                 case 1:
                     toAdd = new RegularMonster(
-                            random.next(COURT_WIDTH - Monster.MONSTER_WIDTH),
+                            random.next(COURT_WIDTH - RegularMonster.WIDTH),
                             py, COURT_WIDTH, COURT_HEIGHT
                     );
                     break;
                 case 2:
                     toAdd = new MovingMonster(
-                            random.next(COURT_WIDTH - Monster.MONSTER_WIDTH),
+                            random.next(COURT_WIDTH - MovingMonster.WIDTH),
                             py, COURT_WIDTH, COURT_HEIGHT
                     );
                     break;
                 case 3:
                     toAdd = new HomingMonster(
-                            random.next(COURT_WIDTH - Monster.MONSTER_WIDTH),
+                            random.next(COURT_WIDTH - HomingMonster.WIDTH),
                             py, COURT_WIDTH, COURT_HEIGHT, player
                     );
                     break;
@@ -248,19 +293,19 @@ public class GameRegion extends JPanel {
             switch (random.next(5 * multiplier)) {
                 case 1:
                     toAdd = new RegularMonster(
-                            random.next(COURT_WIDTH - Monster.MONSTER_WIDTH),
+                            random.next(COURT_WIDTH - RegularMonster.WIDTH),
                             py, COURT_WIDTH, COURT_HEIGHT
                     );
                     break;
                 case 2:
                     toAdd = new MovingMonster(
-                            random.next(COURT_WIDTH - Monster.MONSTER_WIDTH),
+                            random.next(COURT_WIDTH - MovingMonster.WIDTH),
                             py, COURT_WIDTH, COURT_HEIGHT
                     );
                     break;
                 case 3:
                     new HomingMonster(
-                            random.next(COURT_WIDTH - Monster.MONSTER_WIDTH),
+                            random.next(COURT_WIDTH - HomingMonster.WIDTH),
                             py, COURT_WIDTH, COURT_HEIGHT, player
                     );
                     break;
@@ -272,13 +317,16 @@ public class GameRegion extends JPanel {
         if (toAdd != null) {
             for (Monster monster : monsters) {
                 while (toAdd.intersects(monster)) {
-                    toAdd.setPx(random.next(COURT_WIDTH - Monster.MONSTER_WIDTH));
+                    toAdd.setPx(random.next(COURT_WIDTH - toAdd.getWidth()));
                 }
             }
             monsters.add(toAdd);
         }
     }
 
+    /**
+     * Public method for resetting the game to the initial state
+     */
     public void reset() {
         playing = true;
         paused = false;
@@ -302,6 +350,18 @@ public class GameRegion extends JPanel {
         wipeSave();
     }
 
+    /**
+     * The private, modular method that wipes the savefile in 3 possible situations:
+     * <p>
+     * 1. The game is loaded from the savefile
+     * </p>
+     * <p>
+     * 2. The game is reset
+     * </p>
+     * <p>
+     * 3. The game is unpaused
+     * </P>
+     */
     private void wipeSave() {
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter(SAVE_FILE, false));
@@ -313,7 +373,16 @@ public class GameRegion extends JPanel {
         }
     }
 
-    public void beginGame(String buttonLabel) {
+    /**
+     * Modular method for starting the game, and adjusting the button visibility
+     * and the resume button text. Used only in the load method.
+     * <p>
+     * Overlaps with reset because reset can be called independently of beginGame
+     * </p>
+     * 
+     * @param buttonLabel the text that will be put on the resume button
+     */
+    private void beginGame(String buttonLabel) {
         this.paused = true;
         this.playing = true;
         this.pauseButton.setVisible(false);
@@ -325,9 +394,13 @@ public class GameRegion extends JPanel {
         this.resumeButton.setText(buttonLabel);
     }
 
-    public boolean load() {
-        requestFocusInWindow();
-
+    /**
+     * Modular method for creating the save
+     * 
+     * @return false if loading failed (or savefile empty); true if loading was
+     *         successful
+     */
+    private boolean loadSave() {
         try {
             BufferedReader br = new BufferedReader(new FileReader(SAVE_FILE));
             String line;
@@ -391,42 +464,51 @@ public class GameRegion extends JPanel {
                     this.reset();
                     this.wipeSave();
                 }
-
-                scoreLabel.setText("Score: " + score);
-                this.beginGame("Continue");
-                status.setText("Continue The Game!");
-
                 return true;
+            } else {
+                return false;
             }
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
             try {
-                File file = new File(SAVE_FILE);
-                file.createNewFile();
+                new File(SAVE_FILE).createNewFile();
             } catch (IOException e1) {
-                e1.printStackTrace();
-                this.reset();
-                this.beginGame("Start");
-                status.setText("Welcome To DoodleJump!");
+                System.out.println("Something went wrong when trying to load the save file");
                 return false;
             } finally {
                 wipeSave();
             }
         } catch (IOException | IllegalArgumentException e) {
-            this.reset();
-            this.beginGame("Start");
-            status.setText("Welcome To DoodleJump!");
             return false;
         } finally {
             wipeSave();
         }
-
-        this.reset();
-        this.beginGame("Start");
-        status.setText("Welcome To DoodleJump!");
         return false;
     }
 
+    /**
+     * Method for loading the game, potentially from a save file
+     * 
+     * @return true if the game was backed from a save; false otherwise
+     */
+    public boolean load() {
+        requestFocusInWindow();
+        boolean result = loadSave();
+
+        if (result) {
+            scoreLabel.setText("Score: " + score);
+            this.beginGame("Continue");
+            status.setText("Continue The Game!");
+        } else {
+            this.reset();
+            this.beginGame("Start");
+            status.setText("Welcome To DoodleJump!");
+        }
+        return result;
+    }
+
+    /**
+     * Where the logic and internal game state changes occur.
+     */
     private void tick() {
         if (playing && !paused) {
             player.move();
@@ -450,7 +532,7 @@ public class GameRegion extends JPanel {
             this.scrollDown();
 
             if (score > 1500) {
-                yDist = 200;
+                yDist = 175;
             } else if (score > 1000) {
                 yDist = 150;
             } else if (score > 500) {
@@ -458,13 +540,7 @@ public class GameRegion extends JPanel {
             }
 
             for (LinkedList<Platform> platforms : platforms) {
-                platforms.removeIf(platform -> {
-                    if (platform.getClass() == DisappearingPlatform.class) {
-                        return ((DisappearingPlatform) platform).tick();
-                    } else {
-                        return false;
-                    }
-                });
+                platforms.removeIf(Platform::shouldDelete);
             }
 
             for (Monster monster : monsters) {
@@ -498,8 +574,6 @@ public class GameRegion extends JPanel {
                 player.setVy(25);
                 player.setAy(0);
                 player.setVx(0);
-
-                wipeSave();
             }
         } else if (!playing) {
             scrollUp();
@@ -511,16 +585,17 @@ public class GameRegion extends JPanel {
         repaint();
     }
 
+    /**
+     * Method that makes the all game objects collectively move downward then the
+     * player goes up
+     * high enough
+     */
     private void scrollDown() {
         if (player.getPy() < COURT_HEIGHT / 2) {
             int scoreToAdd = (COURT_HEIGHT / 2) - player.getPy();
 
             scroll(scoreToAdd);
-
-            boolean fixing = true;
-            while (fixing) {
-                fixing = propagateUpward();
-            }
+            propagateUpward();
 
             player.setPy(player.getPy() + scoreToAdd);
             score += scoreToAdd / 3;
@@ -528,60 +603,71 @@ public class GameRegion extends JPanel {
         }
     }
 
-    private void scroll(int scoreToAdd) {
+    /**
+     * Modular method that makes all game objects collectively move (up or down)
+     * 
+     * @param amount the amount that all the objects will move by (up or down
+     *               depending on input)
+     */
+    private void scroll(int amount) {
         for (List<Platform> platforms : platforms) {
             for (Platform platform : platforms) {
-                platform.setPy(platform.getPy() + scoreToAdd);
+                platform.setPy(platform.getPy() + amount);
             }
         }
 
         for (Monster monster : monsters) {
-            monster.setPy(monster.getPy() + scoreToAdd);
+            monster.setPy(monster.getPy() + amount);
         }
 
         for (Bullet bullet : bullets) {
-            bullet.setPy(bullet.getPy() + scoreToAdd);
+            bullet.setPy(bullet.getPy() + amount);
         }
     }
 
+    /**
+     * Method that makes all the objects collectively move upward (called when game
+     * is lost)
+     */
     private void scrollUp() {
         int step = -30;
 
         if (!platforms.isEmpty() | !monsters.isEmpty() | !bullets.isEmpty()) {
             scroll(step);
             player.setPy(player.getPy() + step);
-        }
-
-        boolean fixing = true;
-        while (fixing) {
-            fixing = propagateDownward();
+            propagateDownward();
         }
     }
 
-    private boolean propagateDownward() {
-        boolean keepGoing = false;
+    /**
+     * Modular method that deletes game objects that are above the top of the game
+     * region
+     */
+    private void propagateDownward() {
 
         if (platforms.peekFirst() != null && platforms.peekFirst().peekFirst() != null &&
                 platforms.peekFirst().peekFirst().getPy() <= 0) {
             platforms.removeFirst();
-            keepGoing = true;
+            propagateDownward();
         }
 
         if (monsters.peekFirst() != null && monsters.peekFirst().getPy() <= 0) {
             monsters.removeFirst();
-            keepGoing = true;
+            propagateDownward();
         }
 
         if (bullets.peekLast() != null && bullets.peekLast().getPy() <= 0) {
             bullets.removeFirst();
-            keepGoing = true;
+            propagateDownward();
         }
 
-        return keepGoing;
     }
 
-    private boolean propagateUpward() {
-        boolean keepGoing = false;
+    /**
+     * Modular method that deletes game objects that are below the bottom of the
+     * game region
+     */
+    private void propagateUpward() {
 
         if (platforms.peekLast() != null && platforms.peekLast().peekLast() != null &&
                 platforms.peekLast().peekLast().getPy() > COURT_HEIGHT) {
@@ -591,22 +677,23 @@ public class GameRegion extends JPanel {
                 py = platforms.peekFirst().peekLast().getPy();
             }
             platforms.addFirst(getPlatformPair(py - yDist));
-            keepGoing = true;
+            propagateUpward();
         }
 
         if (monsters.peekLast() != null && monsters.peekLast().getPy() > COURT_HEIGHT) {
             monsters.removeLast();
-            keepGoing = true;
+            propagateUpward();
         }
 
         if (bullets.peekFirst() != null && bullets.peekFirst().getPy() > COURT_HEIGHT) {
             bullets.removeFirst();
-            keepGoing = true;
+            propagateUpward();
         }
-
-        return keepGoing;
     }
 
+    /**
+     * public method that pauses the game
+     */
     public void pause() {
         this.paused = true;
         this.pauseButton.setVisible(false);
@@ -618,6 +705,9 @@ public class GameRegion extends JPanel {
 
     }
 
+    /**
+     * public method that resumes the game
+     */
     public void unpause() {
         requestFocusInWindow();
         this.paused = false;
@@ -635,7 +725,12 @@ public class GameRegion extends JPanel {
         wipeSave();
     }
 
-    public void save() {
+    /**
+     * modular method for saving the game
+     * 
+     * @return true if the game saved, false if not
+     */
+    private boolean saveGame() {
         BufferedWriter bw;
         try {
             bw = new BufferedWriter(new FileWriter(SAVE_FILE, false));
@@ -686,18 +781,32 @@ public class GameRegion extends JPanel {
             }
 
             bw.close();
-
-            this.status.setText("Saved Doodle Jump! Ok to Exit Game!");
-            this.saveButton.setEnabled(false);
+            return true;
         } catch (IOException e) {
+            return false;
+        }
+    }
+
+    /**
+     * public method for saving the game
+     */
+    public void save() {
+        if (saveGame()) {
+            this.status.setText("Saved Doodle Jump! Ok to Exit Game!");
+        } else {
             this.status.setText(
                     "Error while writing file! Please Don't Close the Application and "
                             + "Just Continue Your Game!"
             );
-            this.saveButton.setEnabled(false);
         }
+        this.saveButton.setEnabled(false);
     }
 
+    /**
+     * the method that paints all game objects onto the screen (and the background)
+     * 
+     * @param g the graphics context
+     */
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -716,11 +825,22 @@ public class GameRegion extends JPanel {
         }
     }
 
+    /**
+     * method that gives the preferred method of the GameRegion
+     * 
+     * @return the Dimension
+     */
     @Override
     public Dimension getPreferredSize() {
         return new Dimension(COURT_WIDTH, COURT_HEIGHT);
     }
 
+    /**
+     * method that shows whether the game is playing or not (used for testing
+     * purposes)
+     * 
+     * @return true if the game is on, false if not
+     */
     public boolean isPlaying() {
         return playing;
     }
