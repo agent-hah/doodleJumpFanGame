@@ -194,7 +194,7 @@ public class GameRegion extends JPanel {
         int multiplier = monsters.isEmpty() ? 1 : monsters.size();
 
         if (monsters.size() > 5) {
-            multiplier *= 16 << monsters.size() << monsters.size();
+            multiplier *= (int) Math.round(Math.pow(10, monsters.size()));
         }
 
         Monster toAdd = null;
@@ -523,7 +523,7 @@ public class GameRegion extends JPanel {
             }
 
             player.setPy(player.getPy() + scoreToAdd);
-            score += scoreToAdd / 5;
+            score += scoreToAdd / 3;
             this.scoreLabel.setText("Score: " + score);
         }
     }

@@ -56,7 +56,7 @@ public class Player extends GameObj {
     }
 
     public Bullet shootBullet() {
-        int px = this.getPx() + Player.SIZE / 2;
+        int px = this.getPx() + Player.SIZE / 2 - Bullet.SIZE / 2;
         int py = this.getPy();
         return new Bullet(px, py, GameRegion.COURT_WIDTH, GameRegion.COURT_HEIGHT);
     }

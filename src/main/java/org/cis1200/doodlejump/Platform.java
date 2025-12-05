@@ -227,7 +227,7 @@ class WeakPlatform extends Platform {
 
 class DisappearingPlatform extends Platform {
 
-    private static final int TICK_STEP = 32;
+    private static final int TICK_STEP = 21;
     public static final String IMG_FILE_1 = "files/disappearingPlatformTick1.png";
     public static final String IMG_FILE_2 = "files/disappearingPlatformTick2.png";
     public static final String IMG_FILE_3 = "files/disappearingPlatformTick3.png";
@@ -236,7 +236,7 @@ class DisappearingPlatform extends Platform {
     private static BufferedImage img2;
     private static BufferedImage img3;
 
-    private int state;
+    private int state = 0;
     private BufferedImage imgToDraw;
 
     public DisappearingPlatform(int px, int py, int courtWidth, int courtHeight) {
@@ -252,8 +252,6 @@ class DisappearingPlatform extends Platform {
             e.printStackTrace();
         }
         imgToDraw = img1;
-
-        state = -Math.min(((courtHeight - this.getPy()) / 2), rng.next(100));
     }
 
     public DisappearingPlatform(
@@ -273,8 +271,14 @@ class DisappearingPlatform extends Platform {
         this.state = state;
     }
 
+    private boolean inBounds() {
+        return this.getPy() >= 0 && this.getPy() <= this.getMaxY();
+    }
+
     public boolean tick() {
-        state++;
+        if (inBounds()) {
+            state++;
+        }
         if (state > TICK_STEP && state < TICK_STEP * 2) {
             imgToDraw = img2;
         } else if (state > TICK_STEP * 3) {
