@@ -1,12 +1,39 @@
 package org.cis1200.doodlejump;
 
 import org.junit.jupiter.api.*;
+
+import javax.swing.*;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+
 public class DoodleTest {
+
+    GameRegion court;
+    String saveFile = "src/main/java/org/cis1200/doodlejump/saveFile.txt";
+
+    @BeforeEach
+    public void setUp() {
+        final JButton resume = new JButton("Resume");
+        final JButton reset = new JButton("Reset");
+        final JButton pause = new JButton("Pause");
+        final JButton save = new JButton("Save");
+        final JLabel status = new JLabel("Status");
+        final JLabel scoreLabel = new JLabel("Load");
+        final JButton instructionsButton = new JButton("Sound");
+
+        court = new GameRegion(
+                status, scoreLabel, resume, pause, reset, save,
+                instructionsButton
+        );
+        court.reset();
+    }
 
     @Test
     public void testSaveReader() {
@@ -41,6 +68,31 @@ public class DoodleTest {
         assertEquals(expectedPlayer.getPy(), actualPlayer.getPy());
         assertEquals(expectedPlayer.getVx(), actualPlayer.getVx());
         assertEquals(expectedPlayer.getVy(), actualPlayer.getVy());
+    }
+
+    @Test
+    public void testResettingGameWipesSave() {
+        court.save();
+        BufferedReader bw;
+        try {
+            bw = new BufferedReader(new FileReader(saveFile));
+            assertNotEquals("empty", bw.readLine());
+            bw.close();
+        } catch (IOException e) {
+            fail(e.getMessage());
+        } court.reset();
+        try {
+            bw = new BufferedReader(new FileReader(saveFile));
+            assertEquals("empty", bw.readLine());
+            bw.close();
+        } catch (IOException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void testGetIsPlaying() {
+        assertTrue(court.isPlaying());
     }
 
     @Test
@@ -218,8 +270,31 @@ public class DoodleTest {
         Player player = new Player(20, 20, 0, 400, 30000, 30000);
         Platform platform = new RegularPlatform(20, 80, 30000, 30000);
         assertTrue(player.intersects(platform));
+        assertTrue(platform.intersects(player));
         player.move();
         // Just to show that it would've been enough speed to tunnel
         assertFalse(player.intersects(platform));
+        assertFalse(platform.intersects(player));
+    }
+
+    @Test
+    public void testCollisionWithWeakPlatformChangesPlatformState() {
+        Player player = new Player(20, 20, 0, 0, 30000, 30000);
+        Platform platform = new WeakPlatform(20, 50, 30000, 30000);
+
+        platform.interact(player);
+
+        assertEquals("1", String.valueOf((platform.toString().charAt(platform.toString().length() - 1))));
+    }
+
+    @Test
+    public void testDisappearingPlatformWillEventuallyWantToBeDeleted() {
+        DisappearingPlatform platform = new DisappearingPlatform(20, 50, 30000, 30000);
+
+        while (!platform.tick()) {
+            platform.tick();
+        }
+
+        assertTrue(platform.shouldDelete());
     }
 }

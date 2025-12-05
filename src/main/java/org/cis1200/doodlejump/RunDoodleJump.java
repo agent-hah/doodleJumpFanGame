@@ -5,24 +5,34 @@ import javax.swing.*;
 
 public class RunDoodleJump implements Runnable {
 
+    public static final String TEXT = """
+            This Game is called Doodle Jump!
+            
+            The main objective of the game is to get as high as you can while avoiding the monsters
+            and not falling. Don't worry about jumping though, because your character is always jumping!
+            Use A and D to move left or right, respectively, and use SPACE to shoot a shuriken up
+            that can kill monsters! The blue monster dies with one shuriken, and the others take 2.
+            Watch out for the flying saucers, as they will chase you! The bouncy platforms will
+            help you, but some platforms will move or even disappear. Unlike Doodle Jump, you are not
+            able to jump on the monsters to kill them; they will kill you. This game does have a
+            wrap-around field! If you move beyond the right side of the game area, you'll come
+            out the left (and vice versa)!
+            
+            Good luck!
+            """;
+
     @Override
     public void run() {
         // Instructions panel
         // ====================================================================
-        final JFrame instructions = new JFrame("Instructions");
-        instructions.setLocation(0, 0);
-        instructions.add(new Instructions());
-
-        instructions.pack();
-        instructions.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-
         final JButton instructionsButton = new JButton("Instructions");
-        instructionsButton.addActionListener(e -> {
-            instructions.setVisible(true);
-        });
 
         final JFrame frame = new JFrame("Doodle Jump!");
-        frame.setLocation(1000, 1000);
+        frame.setLocation(500, 500);
+
+        instructionsButton.addActionListener(e -> {
+            this.showInstructions(frame);
+        });
 
         // Status panel
         final JPanel status_panel = new JPanel();
@@ -77,11 +87,13 @@ public class RunDoodleJump implements Runnable {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
 
-        instructions.setVisible(true);
-
         // Start game
-        if (court.load()) {
-            instructions.setVisible(false);
+        if (!court.load()) {
+            showInstructions(frame);
         }
+    }
+
+    private void showInstructions(Component frame) {
+        JOptionPane.showMessageDialog(frame, TEXT, "Instructions", JOptionPane.INFORMATION_MESSAGE);
     }
 }

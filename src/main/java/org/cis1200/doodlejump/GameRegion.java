@@ -50,7 +50,7 @@ public class GameRegion extends JPanel {
 
     private boolean paused = false;
 
-    public static final String SAVE_FILE = "files/saveFile.txt";
+    public static final String SAVE_FILE = "src/main/java/org/cis1200/doodlejump/saveFile.txt";
 
     public GameRegion(
             JLabel status, JLabel score, JButton resume, JButton pause, JButton reset,
@@ -281,10 +281,12 @@ public class GameRegion extends JPanel {
 
     public void reset() {
         playing = true;
+        paused = false;
         this.pauseButton.setVisible(true);
         this.resumeButton.setVisible(false);
         this.resetButton.setVisible(false);
         this.saveButton.setVisible(false);
+        this.saveButton.setEnabled(true);
         this.instructionsButton.setVisible(false);
         requestFocusInWindow();
 
@@ -318,6 +320,7 @@ public class GameRegion extends JPanel {
         this.resumeButton.setVisible(true);
         this.resetButton.setVisible(false);
         this.saveButton.setVisible(false);
+        this.saveButton.setEnabled(true);
         this.instructionsButton.setVisible(true);
         this.resumeButton.setText(buttonLabel);
     }
@@ -716,5 +719,9 @@ public class GameRegion extends JPanel {
     @Override
     public Dimension getPreferredSize() {
         return new Dimension(COURT_WIDTH, COURT_HEIGHT);
+    }
+
+    public boolean isPlaying() {
+        return playing;
     }
 }

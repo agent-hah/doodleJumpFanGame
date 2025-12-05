@@ -68,6 +68,9 @@ public abstract class Platform extends GameObj {
             if (imgBouncy == null) {
                 imgBouncy = ImageIO.read(new File(IMG_FILE_BOUNCY));
             }
+            if (imgMoving == null) {
+                imgMoving = ImageIO.read(new File(IMG_FILE_MOVING));
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -90,7 +93,7 @@ public abstract class Platform extends GameObj {
     @Override
     public boolean intersects(GameObj that) {
         if (that instanceof Player) {
-            int pad = Math.min(Math.max(this.getVy(), 5), 30);
+            int pad = Math.min(Math.max(that.getVy(), 5), 30);
             return (that.getVy() >= 0
                     && this.getPy() + this.getHeight() >= that.getPy() + that.getHeight() - pad
                     && that.getPx() + that.getWidth() >= this.getPx()
@@ -104,7 +107,7 @@ public abstract class Platform extends GameObj {
     @Override
     public boolean willIntersect(GameObj that) {
         if (that instanceof Player) {
-            int pad = Math.min(Math.max(this.getVy(), 5), 30);
+            int pad = Math.min(Math.max(that.getVy(), 5), 30);
             int thatNextX = that.getPx() + that.getVx();
             int thatNextY = that.getPy() + that.getVy();
             int thisNextVy = this.getVy() + this.getAy();
@@ -248,6 +251,7 @@ class WeakPlatform extends Platform {
 
 class DisappearingPlatform extends Platform {
 
+    private static final int TICK_STEP = 40;
     public static final String IMG_FILE_1 = "files/disappearingPlatformTick1.png";
     public static final String IMG_FILE_2 = "files/disappearingPlatformTick2.png";
     public static final String IMG_FILE_3 = "files/disappearingPlatformTick3.png";
@@ -295,16 +299,16 @@ class DisappearingPlatform extends Platform {
 
     public boolean tick() {
         state++;
-        if (state > 100 && state < 200) {
+        if (state > TICK_STEP && state < TICK_STEP * 2) {
             imgToDraw = img2;
-        } else if (state > 300) {
+        } else if (state > TICK_STEP * 3) {
             imgToDraw = img3;
         }
         return shouldDelete();
     }
 
     public boolean shouldDelete() {
-        return state > 400;
+        return (state > TICK_STEP * 4);
     }
 
     @Override

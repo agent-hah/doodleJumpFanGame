@@ -146,7 +146,7 @@ PennKey: 16442980
 
   The main stumbling block I had was trying to figure out how to create subtypes that were significantly
   differentiated from each other and satisfied the inheritance/subtyping design component. The other stumbling
-  block was figuring out all of the collisions and making sure the right objects had the right collisions with each
+  block was figuring out all the collisions and making sure the right objects had the right collisions with each
   other.
 
 - Evaluate your design. Is there a good separation of functionality? How well is
