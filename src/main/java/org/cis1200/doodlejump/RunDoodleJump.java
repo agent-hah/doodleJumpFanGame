@@ -17,6 +17,16 @@ public class RunDoodleJump implements Runnable {
             able to jump on the monsters to kill them; they will kill you. This game does have a
             wrap-around field! If you move beyond the right side of the game area, you'll come
             out the left (and vice versa)!
+            
+            You can pause the game, and these buttons will be available to you:
+                Resume: to continue the game
+                Reset: to start a new attempt
+                Save: to save the game (NOTE: the game will wipe the save if you reset or resume)
+                Instructions: in case you want to see these instructions again!
+            
+            When the game first starts up, press the start button!
+            The instructions button will also be available in case you accidentally closed this
+            popup ;)
 
             Good luck!
             """;
@@ -30,9 +40,7 @@ public class RunDoodleJump implements Runnable {
         final JFrame frame = new JFrame("Doodle Jump!");
         frame.setLocation(500, 500);
 
-        instructionsButton.addActionListener(e -> {
-            this.showInstructions(frame);
-        });
+        instructionsButton.addActionListener(e -> this.showInstructions(frame));
 
         // Status panel
         final JPanel status_panel = new JPanel();
@@ -56,21 +64,13 @@ public class RunDoodleJump implements Runnable {
         );
         frame.add(court, BorderLayout.CENTER);
 
-        resume.addActionListener(e -> {
-            court.unpause();
-        });
+        resume.addActionListener(e -> court.unpause());
 
-        reset.addActionListener(e -> {
-            court.reset();
-        });
+        reset.addActionListener(e -> court.reset());
 
-        pause.addActionListener(e -> {
-            court.pause();
-        });
+        pause.addActionListener(e -> court.pause());
 
-        save.addActionListener(e -> {
-            court.save();
-        });
+        save.addActionListener(e -> court.save());
 
         final JPanel control_panel = new JPanel();
         frame.add(control_panel, BorderLayout.NORTH);
