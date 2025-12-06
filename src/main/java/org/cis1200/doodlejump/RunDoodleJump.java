@@ -94,6 +94,7 @@ public class RunDoodleJump implements Runnable {
     }
 
     private void showInstructions(Component frame) {
-        JOptionPane.showMessageDialog(frame, TEXT, "Instructions", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(frame, TEXT, "Instructions",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 }
