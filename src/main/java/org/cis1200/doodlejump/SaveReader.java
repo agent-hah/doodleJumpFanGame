@@ -2,10 +2,17 @@ package org.cis1200.doodlejump;
 
 import java.util.LinkedList;
 
+/** class that gives static methods to read the savefile */
 public class SaveReader {
 
     private final static char COMMA = ',';
 
+    /**
+     * <p>(public for testing purposes)</p>
+     * Method that parses through a string line (presumably with numbers seperated by commas)
+     * @param line the String line
+     * @return the collection of integers in the line
+     */
     public static LinkedList<Integer> parse(String line) {
         LinkedList<Integer> integerList = new LinkedList<>();
 
@@ -35,6 +42,12 @@ public class SaveReader {
         return integerList;
     }
 
+    /**
+     * Static method that loads a player.
+     * @throws IllegalArgumentException if the string contains the wrong number of inputs
+     * @param line the String with the numbers
+     * @return the Player object
+     */
     public static Player loadPlayer(String line) {
         if (line == null) {
             throw new IllegalArgumentException();
@@ -51,6 +64,12 @@ public class SaveReader {
         return new Player(px, py, vx, vy, GameRegion.COURT_WIDTH, GameRegion.COURT_HEIGHT);
     }
 
+    /**
+     * Static method that loads a platform.
+     * @throws IllegalArgumentException if the string contains the wrong number of inputs
+     * @param line the String with inputs
+     * @return the Platform object
+     */
     public static Platform loadPlatform(String line) {
         if (line == null) {
             throw new IllegalArgumentException();
@@ -107,6 +126,13 @@ public class SaveReader {
         };
     }
 
+    /**
+     * Static method that loads a monster.
+     * @throws IllegalArgumentException if the string contains the wrong number of inputs
+     * @param line the String with inputs
+     * @param player the player of the game state (if a homing monster is loaded)
+     * @return the Monster Object
+     */
     public static Monster loadMonster(String line, Player player) {
         if (line == null) {
             throw new IllegalArgumentException();
@@ -138,6 +164,12 @@ public class SaveReader {
         };
     }
 
+    /**
+     * Static method that loads a bullet
+     * @throws IllegalArgumentException if the string contains the wrong number of inputs
+     * @param line the String with inputs
+     * @return the bullet object
+     */
     public static Bullet loadBullet(String line) {
         if (line != null) {
             LinkedList<Integer> inputs;

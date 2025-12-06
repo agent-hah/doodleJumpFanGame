@@ -166,7 +166,7 @@ class RegularPlatform extends Platform {
      * @param courtHeight the height of the game area
      */
     public RegularPlatform(int px, int py, int vx, int vy, int courtWidth, int courtHeight) {
-        super(px, py, AFFECT_VY, vx, vy, courtWidth, courtHeight);
+        super(px, py, vx, vy, AFFECT_VY, courtWidth, courtHeight);
         loadImage();
     }
 

@@ -320,7 +320,7 @@ public class GameRegion extends JPanel {
                     toAdd.setPx(random.next(COURT_WIDTH - toAdd.getWidth()));
                 }
             }
-            monsters.add(toAdd);
+            monsters.addFirst(toAdd);
         }
     }
 
@@ -407,8 +407,6 @@ public class GameRegion extends JPanel {
             line = br.readLine();
             if (line != null && !line.equals("empty")) {
                 this.score = Integer.parseInt(line);
-                System.out.println(line);
-                System.out.println(Integer.parseInt(line));
                 this.player = SaveReader.loadPlayer(br.readLine());
 
                 Platform newPlatform1;
