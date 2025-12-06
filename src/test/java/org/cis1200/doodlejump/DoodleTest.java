@@ -266,8 +266,10 @@ public class DoodleTest {
 
     @Test
     public void testCollisionPlatformAndPlayerPreventsTunnel() {
+        // It's not possible for the player to reach a speed event remotely close to 400 pixels
+        // in the game so the padding isn't that big, but it's for dramatic effect
         Player player = new Player(20, 20, 0, 400, 30000, 30000);
-        Platform platform = new RegularPlatform(20, 80, 30000, 30000);
+        Platform platform = new RegularPlatform(20, 90, 30000, 30000);
         assertTrue(player.intersects(platform));
         assertTrue(platform.intersects(player));
         player.move();
