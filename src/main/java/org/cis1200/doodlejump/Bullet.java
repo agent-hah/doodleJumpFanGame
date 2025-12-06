@@ -93,6 +93,26 @@ public class Bullet extends GameObj {
     }
 
     /**
+     * Overrides the method so that the checkBounds happens
+     * @param px the new x position
+     */
+    @Override
+    public void setPx(int px) {
+        super.setPx(px);
+        this.checkBounds();
+    }
+
+    /**
+     * Overrides the method so that the checkBounds happens
+     * @param py the new y position
+     */
+    @Override
+    public void setPy(int py) {
+        super.setPy(py);
+        this.checkBounds();
+    }
+
+    /**
      * Overrides the move method so that the object internally checks whether it is
      * out
      * of bounds or not

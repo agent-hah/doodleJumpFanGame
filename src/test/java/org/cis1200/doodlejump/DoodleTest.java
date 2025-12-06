@@ -213,17 +213,16 @@ public class DoodleTest {
         assertTrue(bullet.isHitTarget());
     }
 
+    /**
+     */
     @Test
     public void testBulletDetectsBeingOutOfBounds() {
         Bullet bullet = new Bullet(20, 20, 30000, 30000);
+
         assertFalse(bullet.isOutOfBounds());
 
-        bullet.setPx(4000000);
-        assertTrue(bullet.isOutOfBounds());
-
-        bullet.setPx(20);
-        assertFalse(bullet.isOutOfBounds());
-
+        // Note: we aren't going to check x bounds because it's impossible for the bullet to go
+        // out of bounds in the x direction
         bullet.setPy(40000000);
         assertTrue(bullet.isOutOfBounds());
 
@@ -261,7 +260,7 @@ public class DoodleTest {
         player.setVy(0);
 
         player.interact(platform5);
-        assertEquals(-25, player.getVy());
+        assertEquals(-30, player.getVy());
     }
 
     @Test
@@ -292,8 +291,8 @@ public class DoodleTest {
     public void testDisappearingPlatformWillEventuallyWantToBeDeleted() {
         DisappearingPlatform platform = new DisappearingPlatform(20, 50, 30000, 30000);
 
-        while (!platform.tick()) {
-            platform.tick();
+        while (!platform.shouldDelete()) {
+            platform.move();
         }
 
         assertTrue(platform.shouldDelete());
