@@ -187,7 +187,7 @@ class RegularPlatform extends Platform {
 class BouncyPlatform extends Platform {
     public static final String IMG_FILE = "files/bouncyPlatform.png";
     public static final int AFFECT_VY = -40;
-    private BufferedImage img;
+    private static BufferedImage img;
 
     /**
      * Method for loading the image of the bouncy platform and setting it as the
