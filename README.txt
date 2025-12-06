@@ -161,15 +161,16 @@ PennKey: 16442980
 - Evaluate your design. Is there a good separation of functionality? How well is
   private state encapsulated? What would you refactor, if given the chance?
 
-I feel like there is a good separation of functionality because the overarching types of objects
-are abstracted away from the internal game state, and theoretically, the people wouldn't be able to
-see the savefile. The savefile is created through an outside, static method, which increases
-the abstraction. Considering that the game class literally can only run the game and do nothing
-else makes me feel like the state is encapsulated. I feel like through my classes and inheritance
-I hid most of the nuts and bolts of the code, and it would especially true if you consider all the
-helper functions within GameRegion that I made in order to prevent repeating blocks of code.
-The main thing I would refactor, given the chance is the collisions, so that they can be actually
-pixel perfect collisions, so that I would give the game a more polished feel.
+    I feel like there is a good separation of functionality because the overarching types of
+    objects are abstracted away from the internal game state, and theoretically, the people
+    wouldn't be able to see the savefile. The savefile is created through an outside, static
+    method, which increases the abstraction. Considering that the game class literally can only run
+    the game and do nothing else makes me feel like the state is encapsulated. I feel like
+    through my classes and inheritance I hid most of the nuts and bolts of the code, and being
+    encapsulated would especially true if you consider all the helper functions within GameRegion
+    that I made in order to prevent repeating blocks of code. The main thing I would refactor,
+    given the chance is the collisions, so that they can be actually pixel perfect collisions, so
+    that I would give the game a more polished feel.
 
 ========================
 =: External Resources :=
