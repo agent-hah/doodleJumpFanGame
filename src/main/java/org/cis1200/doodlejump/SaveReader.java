@@ -91,7 +91,7 @@ public class SaveReader {
         if (inputs.isEmpty()) {
             throw new IllegalArgumentException("Invalid Size of Inputs");
         }
-        if ((inputs.size() != 5 && inputs.getFirst() != 2)
+        if ((inputs.size() != 5 && inputs.getFirst() != 2 && inputs.getFirst() != 3)
                 | (inputs.size() != 6 && inputs.getFirst() == 2)
                 | (inputs.size() != 6 && inputs.getFirst() == 3)) {
             throw new IllegalArgumentException("Invalid Size of Inputs");

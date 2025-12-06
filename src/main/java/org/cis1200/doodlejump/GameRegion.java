@@ -242,7 +242,12 @@ public class GameRegion extends JPanel {
         int multiplier = monsters.isEmpty() ? 1 : monsters.size();
 
         if (monsters.size() > 5) {
-            multiplier *= (int) Math.round(Math.pow(10, monsters.size()));
+            // It gets really hard when there's more than 5 monsters :(
+            // So I'm making it less likely
+            multiplier = (int) Math.min(
+                    Math.round(Math.pow(20, monsters.size())),
+                    Integer.MAX_VALUE / 40
+            );
         }
 
         Monster toAdd = null;
@@ -250,7 +255,7 @@ public class GameRegion extends JPanel {
         RandomGenerator random = new RandomGenerator();
         int py = -60;
         if (score < 200) {
-            switch (random.next(20 * multiplier)) {
+            switch (random.next(10 * multiplier)) {
                 case 1:
                     toAdd = new RegularMonster(
                             random.next(COURT_WIDTH - RegularMonster.WIDTH),
@@ -267,7 +272,7 @@ public class GameRegion extends JPanel {
                     break;
             }
         } else if (score < 1000) {
-            switch (random.next(10 * multiplier)) {
+            switch (random.next(20 * multiplier)) {
                 case 1:
                     toAdd = new RegularMonster(
                             random.next(COURT_WIDTH - RegularMonster.WIDTH),
@@ -290,7 +295,7 @@ public class GameRegion extends JPanel {
                     break;
             }
         } else {
-            switch (random.next(5 * multiplier)) {
+            switch (random.next(30 * multiplier)) {
                 case 1:
                     toAdd = new RegularMonster(
                             random.next(COURT_WIDTH - RegularMonster.WIDTH),
