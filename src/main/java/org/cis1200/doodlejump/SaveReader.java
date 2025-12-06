@@ -8,8 +8,12 @@ public class SaveReader {
     private final static char COMMA = ',';
 
     /**
-     * <p>(public for testing purposes)</p>
-     * Method that parses through a string line (presumably with numbers seperated by commas)
+     * <p>
+     * (public for testing purposes)
+     * </p>
+     * Method that parses through a string line (presumably with numbers seperated
+     * by commas)
+     * 
      * @param line the String line
      * @return the collection of integers in the line
      */
@@ -44,7 +48,9 @@ public class SaveReader {
 
     /**
      * Static method that loads a player.
-     * @throws IllegalArgumentException if the string contains the wrong number of inputs
+     * 
+     * @throws IllegalArgumentException if the string contains the wrong number of
+     *                                  inputs
      * @param line the String with the numbers
      * @return the Player object
      */
@@ -66,7 +72,9 @@ public class SaveReader {
 
     /**
      * Static method that loads a platform.
-     * @throws IllegalArgumentException if the string contains the wrong number of inputs
+     * 
+     * @throws IllegalArgumentException if the string contains the wrong number of
+     *                                  inputs
      * @param line the String with inputs
      * @return the Platform object
      */
@@ -128,8 +136,10 @@ public class SaveReader {
 
     /**
      * Static method that loads a monster.
-     * @throws IllegalArgumentException if the string contains the wrong number of inputs
-     * @param line the String with inputs
+     * 
+     * @throws IllegalArgumentException if the string contains the wrong number of
+     *                                  inputs
+     * @param line   the String with inputs
      * @param player the player of the game state (if a homing monster is loaded)
      * @return the Monster Object
      */
@@ -166,7 +176,9 @@ public class SaveReader {
 
     /**
      * Static method that loads a bullet
-     * @throws IllegalArgumentException if the string contains the wrong number of inputs
+     * 
+     * @throws IllegalArgumentException if the string contains the wrong number of
+     *                                  inputs
      * @param line the String with inputs
      * @return the bullet object
      */

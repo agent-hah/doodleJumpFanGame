@@ -94,6 +94,7 @@ public class Bullet extends GameObj {
 
     /**
      * Overrides the method so that the checkBounds happens
+     * 
      * @param px the new x position
      */
     @Override
@@ -104,6 +105,7 @@ public class Bullet extends GameObj {
 
     /**
      * Overrides the method so that the checkBounds happens
+     * 
      * @param py the new y position
      */
     @Override

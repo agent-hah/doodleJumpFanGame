@@ -221,7 +221,8 @@ public class DoodleTest {
 
         assertFalse(bullet.isOutOfBounds());
 
-        // Note: we aren't going to check x bounds because it's impossible for the bullet to go
+        // Note: we aren't going to check x bounds because it's impossible for the
+        // bullet to go
         // out of bounds in the x direction
         bullet.setPy(40000000);
         assertTrue(bullet.isOutOfBounds());

@@ -17,13 +17,13 @@ public class RunDoodleJump implements Runnable {
             able to jump on the monsters to kill them; they will kill you. This game does have a
             wrap-around field! If you move beyond the right side of the game area, you'll come
             out the left (and vice versa)!
-            
+
             You can pause the game, and these buttons will be available to you:
                 Resume: to continue the game
                 Reset: to start a new attempt
                 Save: to save the game (NOTE: the game will wipe the save if you reset or resume)
                 Instructions: in case you want to see these instructions again!
-            
+
             When the game first starts up, press the start button!
             The instructions button will also be available in case you accidentally closed this
             popup ;)
@@ -94,7 +94,9 @@ public class RunDoodleJump implements Runnable {
     }
 
     private void showInstructions(Component frame) {
-        JOptionPane.showMessageDialog(frame, TEXT, "Instructions",
-                JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(
+                frame, TEXT, "Instructions",
+                JOptionPane.INFORMATION_MESSAGE
+        );
     }
 }
