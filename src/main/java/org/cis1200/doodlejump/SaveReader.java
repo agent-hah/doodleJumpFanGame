@@ -2,6 +2,8 @@ package org.cis1200.doodlejump;
 
 import java.util.LinkedList;
 
+//This code refactors the chatterbot CSVReader class!
+
 /** class that gives static methods to read the savefile */
 public class SaveReader {
 

@@ -2,6 +2,8 @@ package org.cis1200.doodlejump;
 
 import java.util.Random;
 
+// This code is from the chatterbot homework
+
 /**
  * Random number generator to include an element of randomness into the game.
  */
